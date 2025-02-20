@@ -1,21 +1,21 @@
-import { ToggleCardTypeScript } from "./card";
-import { ToggleCardTypeScriptEditor } from "./editor";
+import FloorsCard from "./card";
+// import { FloorsCardEditor } from "./editor";
 
-declare global {
-  interface Window {
-    customCards: Array<Object>;
-  }
-}
+// declare global {
+//   interface Window {
+//     customCards: Array<Object>;
+//   }
+// }
 
-customElements.define("toggle-card-typescript", ToggleCardTypeScript);
-customElements.define(
-  "toggle-card-typescript-editor",
-  ToggleCardTypeScriptEditor
-);
+customElements.define("floors-card", FloorsCard);
+// customElements.define(
+//   "floors-card-editor",
+//   FloorsCardEditor
+// );
 
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: "toggle-card-typescript",
-  name: "toggle card with TypeScript",
-  description: "Turn an entity on and off",
-});
+// window.customCards = window.customCards || [];
+// window.customCards.push({
+//   type: "floors-card",
+//   name: "toggle card with TypeScript",
+//   description: "Turn an entity on and off",
+// });

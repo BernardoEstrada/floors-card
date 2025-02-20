@@ -11,7 +11,7 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */ /* global Reflect, Promise */ var $24c52f343453d62d$var$extendStatics = function(d, b) {
+***************************************************************************** */ /* global Reflect, Promise, SuppressedError, Symbol, Iterator */ var $24c52f343453d62d$var$extendStatics = function(d, b) {
     $24c52f343453d62d$var$extendStatics = Object.setPrototypeOf || ({
         __proto__: []
     }) instanceof Array && function(d, b) {
@@ -147,12 +147,8 @@ function $24c52f343453d62d$export$67ebef60e6f28a6(thisArg, body) {
         },
         trys: [],
         ops: []
-    }, f, y, t, g;
-    return g = {
-        next: verb(0),
-        "throw": verb(1),
-        "return": verb(2)
-    }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
+    }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() {
         return this;
     }), g;
     function verb(n) {
@@ -307,20 +303,28 @@ function $24c52f343453d62d$export$10c90e4f7922046c(v) {
 function $24c52f343453d62d$export$e427f37a30a4de9b(thisArg, _arguments, generator) {
     if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
     var g = generator.apply(thisArg, _arguments || []), i, q = [];
-    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+    return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
         return this;
     }, i;
-    function verb(n) {
-        if (g[n]) i[n] = function(v) {
-            return new Promise(function(a, b) {
-                q.push([
-                    n,
-                    v,
-                    a,
-                    b
-                ]) > 1 || resume(n, v);
-            });
+    function awaitReturn(f) {
+        return function(v) {
+            return Promise.resolve(v).then(f, reject);
         };
+    }
+    function verb(n, f) {
+        if (g[n]) {
+            i[n] = function(v) {
+                return new Promise(function(a, b) {
+                    q.push([
+                        n,
+                        v,
+                        a,
+                        b
+                    ]) > 1 || resume(n, v);
+                });
+            };
+            if (f) i[n] = f(i[n]);
+        }
     }
     function resume(n, v) {
         try {
@@ -395,11 +399,19 @@ var $24c52f343453d62d$var$__setModuleDefault = Object.create ? function(o, v) {
 } : function(o, v) {
     o["default"] = v;
 };
+var $24c52f343453d62d$var$ownKeys = function(o) {
+    $24c52f343453d62d$var$ownKeys = Object.getOwnPropertyNames || function(o) {
+        var ar = [];
+        for(var k in o)if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+        return ar;
+    };
+    return $24c52f343453d62d$var$ownKeys(o);
+};
 function $24c52f343453d62d$export$c21735bcef00d192(mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null) {
-        for(var k in mod)if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) $24c52f343453d62d$export$45d3717a4c69092e(result, mod, k);
+        for(var k = $24c52f343453d62d$var$ownKeys(mod), i = 0; i < k.length; i++)if (k[i] !== "default") $24c52f343453d62d$export$45d3717a4c69092e(result, mod, k[i]);
     }
     $24c52f343453d62d$var$__setModuleDefault(result, mod);
     return result;
@@ -424,12 +436,81 @@ function $24c52f343453d62d$export$81fdc39f203e4e04(state, receiver) {
     if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function") throw new TypeError("Cannot use 'in' operator on non-object");
     return typeof state === "function" ? receiver === state : state.has(receiver);
 }
+function $24c52f343453d62d$export$88ac25d8e944e405(env, value, async) {
+    if (value !== null && value !== void 0) {
+        if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
+        var dispose, inner;
+        if (async) {
+            if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
+            dispose = value[Symbol.asyncDispose];
+        }
+        if (dispose === void 0) {
+            if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
+            dispose = value[Symbol.dispose];
+            if (async) inner = dispose;
+        }
+        if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+        if (inner) dispose = function() {
+            try {
+                inner.call(this);
+            } catch (e) {
+                return Promise.reject(e);
+            }
+        };
+        env.stack.push({
+            value: value,
+            dispose: dispose,
+            async: async
+        });
+    } else if (async) env.stack.push({
+        async: true
+    });
+    return value;
+}
+var $24c52f343453d62d$var$_SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+function $24c52f343453d62d$export$8f076105dc360e92(env) {
+    function fail(e) {
+        env.error = env.hasError ? new $24c52f343453d62d$var$_SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+        env.hasError = true;
+    }
+    var r, s = 0;
+    function next() {
+        while(r = env.stack.pop())try {
+            if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
+            if (r.dispose) {
+                var result = r.dispose.call(r.value);
+                if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) {
+                    fail(e);
+                    return next();
+                });
+            } else s |= 1;
+        } catch (e) {
+            fail(e);
+        }
+        if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
+        if (env.hasError) throw env.error;
+    }
+    return next();
+}
+function $24c52f343453d62d$export$889dfb5d17574b0b(path, preserveJsx) {
+    if (typeof path === "string" && /^\.\.?\//.test(path)) return path.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+        return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
+    });
+    return path;
+}
 var $24c52f343453d62d$export$2e2bcd8739ae039 = {
     __extends: $24c52f343453d62d$export$a8ba968b8961cb8a,
     __assign: $24c52f343453d62d$export$18ce0697a983be9b,
     __rest: $24c52f343453d62d$export$3c9a16f847548506,
     __decorate: $24c52f343453d62d$export$29e00dfd3077644b,
     __param: $24c52f343453d62d$export$d5ad3fd78186038f,
+    __esDecorate: $24c52f343453d62d$export$3a84e1ae4e97e9b0,
+    __runInitializers: $24c52f343453d62d$export$d831c04e792af3d,
+    __propKey: $24c52f343453d62d$export$6a2a36740a146cb8,
+    __setFunctionName: $24c52f343453d62d$export$d1a06452d3489bc7,
     __metadata: $24c52f343453d62d$export$f1db080c865becb9,
     __awaiter: $24c52f343453d62d$export$1050f835b63b671e,
     __generator: $24c52f343453d62d$export$67ebef60e6f28a6,
@@ -449,8 +530,12 @@ var $24c52f343453d62d$export$2e2bcd8739ae039 = {
     __importDefault: $24c52f343453d62d$export$da59b14a69baef04,
     __classPrivateFieldGet: $24c52f343453d62d$export$d5dcaf168c640c35,
     __classPrivateFieldSet: $24c52f343453d62d$export$d40a35129aaff81f,
-    __classPrivateFieldIn: $24c52f343453d62d$export$81fdc39f203e4e04
+    __classPrivateFieldIn: $24c52f343453d62d$export$81fdc39f203e4e04,
+    __addDisposableResource: $24c52f343453d62d$export$88ac25d8e944e405,
+    __disposeResources: $24c52f343453d62d$export$8f076105dc360e92,
+    __rewriteRelativeImportExtension: $24c52f343453d62d$export$889dfb5d17574b0b
 };
+
 
 
 /**
@@ -540,7 +625,7 @@ const $19fe8e3abedf4df0$var$e = window, $19fe8e3abedf4df0$var$r = $19fe8e3abedf4
 }, $19fe8e3abedf4df0$var$d = "finalized";
 class $19fe8e3abedf4df0$export$c7c07a37856565d extends HTMLElement {
     constructor(){
-        super(), this._$Ei = new Map, this.isUpdatePending = !1, this.hasUpdated = !1, this._$El = null, this.u();
+        super(), this._$Ei = new Map, this.isUpdatePending = !1, this.hasUpdated = !1, this._$El = null, this._$Eu();
     }
     static addInitializer(t) {
         var i;
@@ -603,7 +688,7 @@ class $19fe8e3abedf4df0$export$c7c07a37856565d extends HTMLElement {
         const s = i.attribute;
         return !1 === s ? void 0 : "string" == typeof s ? s : "string" == typeof t ? t.toLowerCase() : void 0;
     }
-    u() {
+    _$Eu() {
         var t;
         this._$E_ = new Promise((t)=>this.enableUpdating = t), this._$AL = new Map, this._$Eg(), this.requestUpdate(), null === (t = this.constructor.h) || void 0 === t || t.forEach((t)=>t(this));
     }
@@ -724,7 +809,7 @@ $19fe8e3abedf4df0$export$c7c07a37856565d[$19fe8e3abedf4df0$var$d] = !0, $19fe8e3
     mode: "open"
 }, null == $19fe8e3abedf4df0$var$o || $19fe8e3abedf4df0$var$o({
     ReactiveElement: $19fe8e3abedf4df0$export$c7c07a37856565d
-}), (null !== ($19fe8e3abedf4df0$var$s = $19fe8e3abedf4df0$var$e.reactiveElementVersions) && void 0 !== $19fe8e3abedf4df0$var$s ? $19fe8e3abedf4df0$var$s : $19fe8e3abedf4df0$var$e.reactiveElementVersions = []).push("1.6.2");
+}), (null !== ($19fe8e3abedf4df0$var$s = $19fe8e3abedf4df0$var$e.reactiveElementVersions) && void 0 !== $19fe8e3abedf4df0$var$s ? $19fe8e3abedf4df0$var$s : $19fe8e3abedf4df0$var$e.reactiveElementVersions = []).push("1.6.3");
 
 
 /**
@@ -734,34 +819,37 @@ $19fe8e3abedf4df0$export$c7c07a37856565d[$19fe8e3abedf4df0$var$d] = !0, $19fe8e3
  */ var $f58f44579a4747ac$var$t;
 const $f58f44579a4747ac$var$i = window, $f58f44579a4747ac$var$s = $f58f44579a4747ac$var$i.trustedTypes, $f58f44579a4747ac$var$e = $f58f44579a4747ac$var$s ? $f58f44579a4747ac$var$s.createPolicy("lit-html", {
     createHTML: (t)=>t
-}) : void 0, $f58f44579a4747ac$var$o = "$lit$", $f58f44579a4747ac$var$n = `lit$${(Math.random() + "").slice(9)}$`, $f58f44579a4747ac$var$l = "?" + $f58f44579a4747ac$var$n, $f58f44579a4747ac$var$h = `<${$f58f44579a4747ac$var$l}>`, $f58f44579a4747ac$var$r = document, $f58f44579a4747ac$var$d = ()=>$f58f44579a4747ac$var$r.createComment(""), $f58f44579a4747ac$var$u = (t)=>null === t || "object" != typeof t && "function" != typeof t, $f58f44579a4747ac$var$c = Array.isArray, $f58f44579a4747ac$var$v = (t)=>$f58f44579a4747ac$var$c(t) || "function" == typeof (null == t ? void 0 : t[Symbol.iterator]), $f58f44579a4747ac$var$a = "[ 	\n\f\r]", $f58f44579a4747ac$var$f = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, $f58f44579a4747ac$var$_ = /-->/g, $f58f44579a4747ac$var$m = />/g, $f58f44579a4747ac$var$p = RegExp(`>|${$f58f44579a4747ac$var$a}(?:([^\\s"'>=/]+)(${$f58f44579a4747ac$var$a}*=${$f58f44579a4747ac$var$a}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), $f58f44579a4747ac$var$g = /'/g, $f58f44579a4747ac$var$$ = /"/g, $f58f44579a4747ac$var$y = /^(?:script|style|textarea|title)$/i, $f58f44579a4747ac$var$w = (t)=>(i, ...s)=>({
+}) : void 0, $f58f44579a4747ac$var$o = "$lit$", $f58f44579a4747ac$var$n = `lit$${(Math.random() + "").slice(9)}$`, $f58f44579a4747ac$var$l = "?" + $f58f44579a4747ac$var$n, $f58f44579a4747ac$var$h = `<${$f58f44579a4747ac$var$l}>`, $f58f44579a4747ac$var$r = document, $f58f44579a4747ac$var$u = ()=>$f58f44579a4747ac$var$r.createComment(""), $f58f44579a4747ac$var$d = (t)=>null === t || "object" != typeof t && "function" != typeof t, $f58f44579a4747ac$var$c = Array.isArray, $f58f44579a4747ac$var$v = (t)=>$f58f44579a4747ac$var$c(t) || "function" == typeof (null == t ? void 0 : t[Symbol.iterator]), $f58f44579a4747ac$var$a = "[ \t\n\f\r]", $f58f44579a4747ac$var$f = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, $f58f44579a4747ac$var$_ = /-->/g, $f58f44579a4747ac$var$m = />/g, $f58f44579a4747ac$var$p = RegExp(`>|${$f58f44579a4747ac$var$a}(?:([^\\s"'>=/]+)(${$f58f44579a4747ac$var$a}*=${$f58f44579a4747ac$var$a}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), $f58f44579a4747ac$var$g = /'/g, $f58f44579a4747ac$var$$ = /"/g, $f58f44579a4747ac$var$y = /^(?:script|style|textarea|title)$/i, $f58f44579a4747ac$var$w = (t)=>(i, ...s)=>({
             _$litType$: t,
             strings: i,
             values: s
-        }), $f58f44579a4747ac$export$c0bb0b647f701bb5 = $f58f44579a4747ac$var$w(1), $f58f44579a4747ac$export$7ed1367e7fa1ad68 = $f58f44579a4747ac$var$w(2), $f58f44579a4747ac$export$9c068ae9cc5db4e8 = Symbol.for("lit-noChange"), $f58f44579a4747ac$export$45b790e32b2810ee = Symbol.for("lit-nothing"), $f58f44579a4747ac$var$E = new WeakMap, $f58f44579a4747ac$var$C = $f58f44579a4747ac$var$r.createTreeWalker($f58f44579a4747ac$var$r, 129, null, !1), $f58f44579a4747ac$var$P = (t, i)=>{
-    const s = t.length - 1, l = [];
-    let r, d = 2 === i ? "<svg>" : "", u = $f58f44579a4747ac$var$f;
+        }), $f58f44579a4747ac$export$c0bb0b647f701bb5 = $f58f44579a4747ac$var$w(1), $f58f44579a4747ac$export$7ed1367e7fa1ad68 = $f58f44579a4747ac$var$w(2), $f58f44579a4747ac$export$9c068ae9cc5db4e8 = Symbol.for("lit-noChange"), $f58f44579a4747ac$export$45b790e32b2810ee = Symbol.for("lit-nothing"), $f58f44579a4747ac$var$E = new WeakMap, $f58f44579a4747ac$var$C = $f58f44579a4747ac$var$r.createTreeWalker($f58f44579a4747ac$var$r, 129, null, !1);
+function $f58f44579a4747ac$var$P(t, i) {
+    if (!Array.isArray(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
+    return void 0 !== $f58f44579a4747ac$var$e ? $f58f44579a4747ac$var$e.createHTML(i) : i;
+}
+const $f58f44579a4747ac$var$V = (t, i)=>{
+    const s = t.length - 1, e = [];
+    let l, r = 2 === i ? "<svg>" : "", u = $f58f44579a4747ac$var$f;
     for(let i = 0; i < s; i++){
         const s = t[i];
-        let e, c, v = -1, a = 0;
-        for(; a < s.length && (u.lastIndex = a, c = u.exec(s), null !== c);)a = u.lastIndex, u === $f58f44579a4747ac$var$f ? "!--" === c[1] ? u = $f58f44579a4747ac$var$_ : void 0 !== c[1] ? u = $f58f44579a4747ac$var$m : void 0 !== c[2] ? ($f58f44579a4747ac$var$y.test(c[2]) && (r = RegExp("</" + c[2], "g")), u = $f58f44579a4747ac$var$p) : void 0 !== c[3] && (u = $f58f44579a4747ac$var$p) : u === $f58f44579a4747ac$var$p ? ">" === c[0] ? (u = null != r ? r : $f58f44579a4747ac$var$f, v = -1) : void 0 === c[1] ? v = -2 : (v = u.lastIndex - c[2].length, e = c[1], u = void 0 === c[3] ? $f58f44579a4747ac$var$p : '"' === c[3] ? $f58f44579a4747ac$var$$ : $f58f44579a4747ac$var$g) : u === $f58f44579a4747ac$var$$ || u === $f58f44579a4747ac$var$g ? u = $f58f44579a4747ac$var$p : u === $f58f44579a4747ac$var$_ || u === $f58f44579a4747ac$var$m ? u = $f58f44579a4747ac$var$f : (u = $f58f44579a4747ac$var$p, r = void 0);
+        let d, c, v = -1, a = 0;
+        for(; a < s.length && (u.lastIndex = a, c = u.exec(s), null !== c);)a = u.lastIndex, u === $f58f44579a4747ac$var$f ? "!--" === c[1] ? u = $f58f44579a4747ac$var$_ : void 0 !== c[1] ? u = $f58f44579a4747ac$var$m : void 0 !== c[2] ? ($f58f44579a4747ac$var$y.test(c[2]) && (l = RegExp("</" + c[2], "g")), u = $f58f44579a4747ac$var$p) : void 0 !== c[3] && (u = $f58f44579a4747ac$var$p) : u === $f58f44579a4747ac$var$p ? ">" === c[0] ? (u = null != l ? l : $f58f44579a4747ac$var$f, v = -1) : void 0 === c[1] ? v = -2 : (v = u.lastIndex - c[2].length, d = c[1], u = void 0 === c[3] ? $f58f44579a4747ac$var$p : '"' === c[3] ? $f58f44579a4747ac$var$$ : $f58f44579a4747ac$var$g) : u === $f58f44579a4747ac$var$$ || u === $f58f44579a4747ac$var$g ? u = $f58f44579a4747ac$var$p : u === $f58f44579a4747ac$var$_ || u === $f58f44579a4747ac$var$m ? u = $f58f44579a4747ac$var$f : (u = $f58f44579a4747ac$var$p, l = void 0);
         const w = u === $f58f44579a4747ac$var$p && t[i + 1].startsWith("/>") ? " " : "";
-        d += u === $f58f44579a4747ac$var$f ? s + $f58f44579a4747ac$var$h : v >= 0 ? (l.push(e), s.slice(0, v) + $f58f44579a4747ac$var$o + s.slice(v) + $f58f44579a4747ac$var$n + w) : s + $f58f44579a4747ac$var$n + (-2 === v ? (l.push(void 0), i) : w);
+        r += u === $f58f44579a4747ac$var$f ? s + $f58f44579a4747ac$var$h : v >= 0 ? (e.push(d), s.slice(0, v) + $f58f44579a4747ac$var$o + s.slice(v) + $f58f44579a4747ac$var$n + w) : s + $f58f44579a4747ac$var$n + (-2 === v ? (e.push(void 0), i) : w);
     }
-    const c = d + (t[s] || "<?>") + (2 === i ? "</svg>" : "");
-    if (!Array.isArray(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
     return [
-        void 0 !== $f58f44579a4747ac$var$e ? $f58f44579a4747ac$var$e.createHTML(c) : c,
-        l
+        $f58f44579a4747ac$var$P(t, r + (t[s] || "<?>") + (2 === i ? "</svg>" : "")),
+        e
     ];
 };
-class $f58f44579a4747ac$var$V {
-    constructor({ strings: t , _$litType$: i  }, e){
+class $f58f44579a4747ac$var$N {
+    constructor({ strings: t, _$litType$: i }, e){
         let h;
         this.parts = [];
-        let r = 0, u = 0;
-        const c = t.length - 1, v = this.parts, [a, f] = $f58f44579a4747ac$var$P(t, i);
-        if (this.el = $f58f44579a4747ac$var$V.createElement(a, e), $f58f44579a4747ac$var$C.currentNode = this.el.content, 2 === i) {
+        let r = 0, d = 0;
+        const c = t.length - 1, v = this.parts, [a, f] = $f58f44579a4747ac$var$V(t, i);
+        if (this.el = $f58f44579a4747ac$var$N.createElement(a, e), $f58f44579a4747ac$var$C.currentNode = this.el.content, 2 === i) {
             const t = this.el.content, i = t.firstChild;
             i.remove(), t.append(...i.childNodes);
         }
@@ -770,7 +858,7 @@ class $f58f44579a4747ac$var$V {
                 if (h.hasAttributes()) {
                     const t = [];
                     for (const i of h.getAttributeNames())if (i.endsWith($f58f44579a4747ac$var$o) || i.startsWith($f58f44579a4747ac$var$n)) {
-                        const s = f[u++];
+                        const s = f[d++];
                         if (t.push(i), void 0 !== s) {
                             const t = h.getAttribute(s.toLowerCase() + $f58f44579a4747ac$var$o).split($f58f44579a4747ac$var$n), i = /([.?@])?(.*)/.exec(s);
                             v.push({
@@ -778,7 +866,7 @@ class $f58f44579a4747ac$var$V {
                                 index: r,
                                 name: i[2],
                                 strings: t,
-                                ctor: "." === i[1] ? $f58f44579a4747ac$var$k : "?" === i[1] ? $f58f44579a4747ac$var$I : "@" === i[1] ? $f58f44579a4747ac$var$L : $f58f44579a4747ac$var$R
+                                ctor: "." === i[1] ? $f58f44579a4747ac$var$H : "?" === i[1] ? $f58f44579a4747ac$var$L : "@" === i[1] ? $f58f44579a4747ac$var$z : $f58f44579a4747ac$var$k
                             });
                         } else v.push({
                             type: 6,
@@ -791,11 +879,11 @@ class $f58f44579a4747ac$var$V {
                     const t = h.textContent.split($f58f44579a4747ac$var$n), i = t.length - 1;
                     if (i > 0) {
                         h.textContent = $f58f44579a4747ac$var$s ? $f58f44579a4747ac$var$s.emptyScript : "";
-                        for(let s = 0; s < i; s++)h.append(t[s], $f58f44579a4747ac$var$d()), $f58f44579a4747ac$var$C.nextNode(), v.push({
+                        for(let s = 0; s < i; s++)h.append(t[s], $f58f44579a4747ac$var$u()), $f58f44579a4747ac$var$C.nextNode(), v.push({
                             type: 2,
                             index: ++r
                         });
-                        h.append(t[i], $f58f44579a4747ac$var$d());
+                        h.append(t[i], $f58f44579a4747ac$var$u());
                     }
                 }
             } else if (8 === h.nodeType) {
@@ -819,14 +907,14 @@ class $f58f44579a4747ac$var$V {
         return s.innerHTML = t, s;
     }
 }
-function $f58f44579a4747ac$var$N(t, i, s = t, e) {
+function $f58f44579a4747ac$var$S(t, i, s = t, e) {
     var o, n, l, h;
     if (i === $f58f44579a4747ac$export$9c068ae9cc5db4e8) return i;
     let r = void 0 !== e ? null === (o = s._$Co) || void 0 === o ? void 0 : o[e] : s._$Cl;
-    const d = $f58f44579a4747ac$var$u(i) ? void 0 : i._$litDirective$;
-    return (null == r ? void 0 : r.constructor) !== d && (null === (n = null == r ? void 0 : r._$AO) || void 0 === n || n.call(r, !1), void 0 === d ? r = void 0 : (r = new d(t), r._$AT(t, s, e)), void 0 !== e ? (null !== (l = (h = s)._$Co) && void 0 !== l ? l : h._$Co = [])[e] = r : s._$Cl = r), void 0 !== r && (i = $f58f44579a4747ac$var$N(t, r._$AS(t, i.values), r, e)), i;
+    const u = $f58f44579a4747ac$var$d(i) ? void 0 : i._$litDirective$;
+    return (null == r ? void 0 : r.constructor) !== u && (null === (n = null == r ? void 0 : r._$AO) || void 0 === n || n.call(r, !1), void 0 === u ? r = void 0 : (r = new u(t), r._$AT(t, s, e)), void 0 !== e ? (null !== (l = (h = s)._$Co) && void 0 !== l ? l : h._$Co = [])[e] = r : s._$Cl = r), void 0 !== r && (i = $f58f44579a4747ac$var$S(t, r._$AS(t, i.values), r, e)), i;
 }
-class $f58f44579a4747ac$var$S {
+class $f58f44579a4747ac$var$M {
     constructor(t, i){
         this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = i;
     }
@@ -838,15 +926,15 @@ class $f58f44579a4747ac$var$S {
     }
     u(t) {
         var i;
-        const { el: { content: s  } , parts: e  } = this._$AD, o = (null !== (i = null == t ? void 0 : t.creationScope) && void 0 !== i ? i : $f58f44579a4747ac$var$r).importNode(s, !0);
+        const { el: { content: s }, parts: e } = this._$AD, o = (null !== (i = null == t ? void 0 : t.creationScope) && void 0 !== i ? i : $f58f44579a4747ac$var$r).importNode(s, !0);
         $f58f44579a4747ac$var$C.currentNode = o;
-        let n = $f58f44579a4747ac$var$C.nextNode(), l = 0, h = 0, d = e[0];
-        for(; void 0 !== d;){
-            if (l === d.index) {
+        let n = $f58f44579a4747ac$var$C.nextNode(), l = 0, h = 0, u = e[0];
+        for(; void 0 !== u;){
+            if (l === u.index) {
                 let i;
-                2 === d.type ? i = new $f58f44579a4747ac$var$M(n, n.nextSibling, this, t) : 1 === d.type ? i = new d.ctor(n, d.name, d.strings, this, t) : 6 === d.type && (i = new $f58f44579a4747ac$var$z(n, this, t)), this._$AV.push(i), d = e[++h];
+                2 === u.type ? i = new $f58f44579a4747ac$var$R(n, n.nextSibling, this, t) : 1 === u.type ? i = new u.ctor(n, u.name, u.strings, this, t) : 6 === u.type && (i = new $f58f44579a4747ac$var$Z(n, this, t)), this._$AV.push(i), u = e[++h];
             }
-            l !== (null == d ? void 0 : d.index) && (n = $f58f44579a4747ac$var$C.nextNode(), l++);
+            l !== (null == u ? void 0 : u.index) && (n = $f58f44579a4747ac$var$C.nextNode(), l++);
         }
         return $f58f44579a4747ac$var$C.currentNode = $f58f44579a4747ac$var$r, o;
     }
@@ -855,7 +943,7 @@ class $f58f44579a4747ac$var$S {
         for (const s of this._$AV)void 0 !== s && (void 0 !== s.strings ? (s._$AI(t, s, i), i += s.strings.length - 2) : s._$AI(t[i])), i++;
     }
 }
-class $f58f44579a4747ac$var$M {
+class $f58f44579a4747ac$var$R {
     constructor(t, i, s, e){
         var o;
         this.type = 2, this._$AH = $f58f44579a4747ac$export$45b790e32b2810ee, this._$AN = void 0, this._$AA = t, this._$AB = i, this._$AM = s, this.options = e, this._$Cp = null === (o = null == e ? void 0 : e.isConnected) || void 0 === o || o;
@@ -876,7 +964,7 @@ class $f58f44579a4747ac$var$M {
         return this._$AB;
     }
     _$AI(t, i = this) {
-        t = $f58f44579a4747ac$var$N(this, t, i), $f58f44579a4747ac$var$u(t) ? t === $f58f44579a4747ac$export$45b790e32b2810ee || null == t || "" === t ? (this._$AH !== $f58f44579a4747ac$export$45b790e32b2810ee && this._$AR(), this._$AH = $f58f44579a4747ac$export$45b790e32b2810ee) : t !== this._$AH && t !== $f58f44579a4747ac$export$9c068ae9cc5db4e8 && this._(t) : void 0 !== t._$litType$ ? this.g(t) : void 0 !== t.nodeType ? this.$(t) : $f58f44579a4747ac$var$v(t) ? this.T(t) : this._(t);
+        t = $f58f44579a4747ac$var$S(this, t, i), $f58f44579a4747ac$var$d(t) ? t === $f58f44579a4747ac$export$45b790e32b2810ee || null == t || "" === t ? (this._$AH !== $f58f44579a4747ac$export$45b790e32b2810ee && this._$AR(), this._$AH = $f58f44579a4747ac$export$45b790e32b2810ee) : t !== this._$AH && t !== $f58f44579a4747ac$export$9c068ae9cc5db4e8 && this._(t) : void 0 !== t._$litType$ ? this.g(t) : void 0 !== t.nodeType ? this.$(t) : $f58f44579a4747ac$var$v(t) ? this.T(t) : this._(t);
     }
     k(t) {
         return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -885,26 +973,26 @@ class $f58f44579a4747ac$var$M {
         this._$AH !== t && (this._$AR(), this._$AH = this.k(t));
     }
     _(t) {
-        this._$AH !== $f58f44579a4747ac$export$45b790e32b2810ee && $f58f44579a4747ac$var$u(this._$AH) ? this._$AA.nextSibling.data = t : this.$($f58f44579a4747ac$var$r.createTextNode(t)), this._$AH = t;
+        this._$AH !== $f58f44579a4747ac$export$45b790e32b2810ee && $f58f44579a4747ac$var$d(this._$AH) ? this._$AA.nextSibling.data = t : this.$($f58f44579a4747ac$var$r.createTextNode(t)), this._$AH = t;
     }
     g(t) {
         var i;
-        const { values: s , _$litType$: e  } = t, o = "number" == typeof e ? this._$AC(t) : (void 0 === e.el && (e.el = $f58f44579a4747ac$var$V.createElement(e.h, this.options)), e);
+        const { values: s, _$litType$: e } = t, o = "number" == typeof e ? this._$AC(t) : (void 0 === e.el && (e.el = $f58f44579a4747ac$var$N.createElement($f58f44579a4747ac$var$P(e.h, e.h[0]), this.options)), e);
         if ((null === (i = this._$AH) || void 0 === i ? void 0 : i._$AD) === o) this._$AH.v(s);
         else {
-            const t = new $f58f44579a4747ac$var$S(o, this), i = t.u(this.options);
+            const t = new $f58f44579a4747ac$var$M(o, this), i = t.u(this.options);
             t.v(s), this.$(i), this._$AH = t;
         }
     }
     _$AC(t) {
         let i = $f58f44579a4747ac$var$E.get(t.strings);
-        return void 0 === i && $f58f44579a4747ac$var$E.set(t.strings, i = new $f58f44579a4747ac$var$V(t)), i;
+        return void 0 === i && $f58f44579a4747ac$var$E.set(t.strings, i = new $f58f44579a4747ac$var$N(t)), i;
     }
     T(t) {
         $f58f44579a4747ac$var$c(this._$AH) || (this._$AH = [], this._$AR());
         const i = this._$AH;
         let s, e = 0;
-        for (const o of t)e === i.length ? i.push(s = new $f58f44579a4747ac$var$M(this.k($f58f44579a4747ac$var$d()), this.k($f58f44579a4747ac$var$d()), this, this.options)) : s = i[e], s._$AI(o), e++;
+        for (const o of t)e === i.length ? i.push(s = new $f58f44579a4747ac$var$R(this.k($f58f44579a4747ac$var$u()), this.k($f58f44579a4747ac$var$u()), this, this.options)) : s = i[e], s._$AI(o), e++;
         e < i.length && (this._$AR(s && s._$AB.nextSibling, e), i.length = e);
     }
     _$AR(t = this._$AA.nextSibling, i) {
@@ -919,7 +1007,7 @@ class $f58f44579a4747ac$var$M {
         void 0 === this._$AM && (this._$Cp = t, null === (i = this._$AP) || void 0 === i || i.call(this, t));
     }
 }
-class $f58f44579a4747ac$var$R {
+class $f58f44579a4747ac$var$k {
     constructor(t, i, s, e, o){
         this.type = 1, this._$AH = $f58f44579a4747ac$export$45b790e32b2810ee, this._$AN = void 0, this.element = t, this.name = i, this._$AM = e, this.options = o, s.length > 2 || "" !== s[0] || "" !== s[1] ? (this._$AH = Array(s.length - 1).fill(new String), this.strings = s) : this._$AH = $f58f44579a4747ac$export$45b790e32b2810ee;
     }
@@ -932,11 +1020,11 @@ class $f58f44579a4747ac$var$R {
     _$AI(t, i = this, s, e) {
         const o = this.strings;
         let n = !1;
-        if (void 0 === o) t = $f58f44579a4747ac$var$N(this, t, i, 0), n = !$f58f44579a4747ac$var$u(t) || t !== this._$AH && t !== $f58f44579a4747ac$export$9c068ae9cc5db4e8, n && (this._$AH = t);
+        if (void 0 === o) t = $f58f44579a4747ac$var$S(this, t, i, 0), n = !$f58f44579a4747ac$var$d(t) || t !== this._$AH && t !== $f58f44579a4747ac$export$9c068ae9cc5db4e8, n && (this._$AH = t);
         else {
             const e = t;
             let l, h;
-            for(t = o[0], l = 0; l < o.length - 1; l++)h = $f58f44579a4747ac$var$N(this, e[s + l], i, l), h === $f58f44579a4747ac$export$9c068ae9cc5db4e8 && (h = this._$AH[l]), n || (n = !$f58f44579a4747ac$var$u(h) || h !== this._$AH[l]), h === $f58f44579a4747ac$export$45b790e32b2810ee ? t = $f58f44579a4747ac$export$45b790e32b2810ee : t !== $f58f44579a4747ac$export$45b790e32b2810ee && (t += (null != h ? h : "") + o[l + 1]), this._$AH[l] = h;
+            for(t = o[0], l = 0; l < o.length - 1; l++)h = $f58f44579a4747ac$var$S(this, e[s + l], i, l), h === $f58f44579a4747ac$export$9c068ae9cc5db4e8 && (h = this._$AH[l]), n || (n = !$f58f44579a4747ac$var$d(h) || h !== this._$AH[l]), h === $f58f44579a4747ac$export$45b790e32b2810ee ? t = $f58f44579a4747ac$export$45b790e32b2810ee : t !== $f58f44579a4747ac$export$45b790e32b2810ee && (t += (null != h ? h : "") + o[l + 1]), this._$AH[l] = h;
         }
         n && !e && this.j(t);
     }
@@ -944,7 +1032,7 @@ class $f58f44579a4747ac$var$R {
         t === $f58f44579a4747ac$export$45b790e32b2810ee ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, null != t ? t : "");
     }
 }
-class $f58f44579a4747ac$var$k extends $f58f44579a4747ac$var$R {
+class $f58f44579a4747ac$var$H extends $f58f44579a4747ac$var$k {
     constructor(){
         super(...arguments), this.type = 3;
     }
@@ -952,22 +1040,22 @@ class $f58f44579a4747ac$var$k extends $f58f44579a4747ac$var$R {
         this.element[this.name] = t === $f58f44579a4747ac$export$45b790e32b2810ee ? void 0 : t;
     }
 }
-const $f58f44579a4747ac$var$H = $f58f44579a4747ac$var$s ? $f58f44579a4747ac$var$s.emptyScript : "";
-class $f58f44579a4747ac$var$I extends $f58f44579a4747ac$var$R {
+const $f58f44579a4747ac$var$I = $f58f44579a4747ac$var$s ? $f58f44579a4747ac$var$s.emptyScript : "";
+class $f58f44579a4747ac$var$L extends $f58f44579a4747ac$var$k {
     constructor(){
         super(...arguments), this.type = 4;
     }
     j(t) {
-        t && t !== $f58f44579a4747ac$export$45b790e32b2810ee ? this.element.setAttribute(this.name, $f58f44579a4747ac$var$H) : this.element.removeAttribute(this.name);
+        t && t !== $f58f44579a4747ac$export$45b790e32b2810ee ? this.element.setAttribute(this.name, $f58f44579a4747ac$var$I) : this.element.removeAttribute(this.name);
     }
 }
-class $f58f44579a4747ac$var$L extends $f58f44579a4747ac$var$R {
+class $f58f44579a4747ac$var$z extends $f58f44579a4747ac$var$k {
     constructor(t, i, s, e, o){
         super(t, i, s, e, o), this.type = 5;
     }
     _$AI(t, i = this) {
         var s;
-        if ((t = null !== (s = $f58f44579a4747ac$var$N(this, t, i, 0)) && void 0 !== s ? s : $f58f44579a4747ac$export$45b790e32b2810ee) === $f58f44579a4747ac$export$9c068ae9cc5db4e8) return;
+        if ((t = null !== (s = $f58f44579a4747ac$var$S(this, t, i, 0)) && void 0 !== s ? s : $f58f44579a4747ac$export$45b790e32b2810ee) === $f58f44579a4747ac$export$9c068ae9cc5db4e8) return;
         const e = this._$AH, o = t === $f58f44579a4747ac$export$45b790e32b2810ee && e !== $f58f44579a4747ac$export$45b790e32b2810ee || t.capture !== e.capture || t.once !== e.once || t.passive !== e.passive, n = t !== $f58f44579a4747ac$export$45b790e32b2810ee && (e === $f58f44579a4747ac$export$45b790e32b2810ee || o);
         o && this.element.removeEventListener(this.name, this, e), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
     }
@@ -976,7 +1064,7 @@ class $f58f44579a4747ac$var$L extends $f58f44579a4747ac$var$R {
         "function" == typeof this._$AH ? this._$AH.call(null !== (s = null === (i = this.options) || void 0 === i ? void 0 : i.host) && void 0 !== s ? s : this.element, t) : this._$AH.handleEvent(t);
     }
 }
-class $f58f44579a4747ac$var$z {
+class $f58f44579a4747ac$var$Z {
     constructor(t, i, s){
         this.element = t, this.type = 6, this._$AN = void 0, this._$AM = i, this.options = s;
     }
@@ -984,7 +1072,7 @@ class $f58f44579a4747ac$var$z {
         return this._$AM._$AU;
     }
     _$AI(t) {
-        $f58f44579a4747ac$var$N(this, t);
+        $f58f44579a4747ac$var$S(this, t);
     }
 }
 const $f58f44579a4747ac$export$8613d1ca9052b22e = {
@@ -992,25 +1080,25 @@ const $f58f44579a4747ac$export$8613d1ca9052b22e = {
     P: $f58f44579a4747ac$var$n,
     A: $f58f44579a4747ac$var$l,
     C: 1,
-    M: $f58f44579a4747ac$var$P,
-    L: $f58f44579a4747ac$var$S,
-    D: $f58f44579a4747ac$var$v,
-    R: $f58f44579a4747ac$var$N,
-    I: $f58f44579a4747ac$var$M,
-    V: $f58f44579a4747ac$var$R,
-    H: $f58f44579a4747ac$var$I,
-    N: $f58f44579a4747ac$var$L,
-    U: $f58f44579a4747ac$var$k,
-    F: $f58f44579a4747ac$var$z
-}, $f58f44579a4747ac$var$j = $f58f44579a4747ac$var$i.litHtmlPolyfillSupport;
-null == $f58f44579a4747ac$var$j || $f58f44579a4747ac$var$j($f58f44579a4747ac$var$V, $f58f44579a4747ac$var$M), (null !== ($f58f44579a4747ac$var$t = $f58f44579a4747ac$var$i.litHtmlVersions) && void 0 !== $f58f44579a4747ac$var$t ? $f58f44579a4747ac$var$t : $f58f44579a4747ac$var$i.litHtmlVersions = []).push("2.7.4");
+    M: $f58f44579a4747ac$var$V,
+    L: $f58f44579a4747ac$var$M,
+    R: $f58f44579a4747ac$var$v,
+    D: $f58f44579a4747ac$var$S,
+    I: $f58f44579a4747ac$var$R,
+    V: $f58f44579a4747ac$var$k,
+    H: $f58f44579a4747ac$var$L,
+    N: $f58f44579a4747ac$var$z,
+    U: $f58f44579a4747ac$var$H,
+    F: $f58f44579a4747ac$var$Z
+}, $f58f44579a4747ac$var$B = $f58f44579a4747ac$var$i.litHtmlPolyfillSupport;
+null == $f58f44579a4747ac$var$B || $f58f44579a4747ac$var$B($f58f44579a4747ac$var$N, $f58f44579a4747ac$var$R), (null !== ($f58f44579a4747ac$var$t = $f58f44579a4747ac$var$i.litHtmlVersions) && void 0 !== $f58f44579a4747ac$var$t ? $f58f44579a4747ac$var$t : $f58f44579a4747ac$var$i.litHtmlVersions = []).push("2.8.0");
 const $f58f44579a4747ac$export$b3890eb0ae9dca99 = (t, i, s)=>{
     var e, o;
     const n = null !== (e = null == s ? void 0 : s.renderBefore) && void 0 !== e ? e : i;
     let l = n._$litPart$;
     if (void 0 === l) {
         const t = null !== (o = null == s ? void 0 : s.renderBefore) && void 0 !== o ? o : null;
-        n._$litPart$ = l = new $f58f44579a4747ac$var$M(i.insertBefore($f58f44579a4747ac$var$d(), t), t, void 0, null != s ? s : {});
+        n._$litPart$ = l = new $f58f44579a4747ac$var$R(i.insertBefore($f58f44579a4747ac$var$u(), t), t, void 0, null != s ? s : {});
     }
     return l._$AI(t), l;
 };
@@ -1064,7 +1152,7 @@ const $ab210b2da7b39b9d$export$f5c524615a7708d6 = {
     },
     _$AL: (t)=>t._$AL
 };
-(null !== ($ab210b2da7b39b9d$var$o = globalThis.litElementVersions) && void 0 !== $ab210b2da7b39b9d$var$o ? $ab210b2da7b39b9d$var$o : globalThis.litElementVersions = []).push("3.3.2");
+(null !== ($ab210b2da7b39b9d$var$o = globalThis.litElementVersions) && void 0 !== $ab210b2da7b39b9d$var$o ? $ab210b2da7b39b9d$var$o : globalThis.litElementVersions = []).push("3.3.3");
 
 
 /**
@@ -1076,52 +1164,20 @@ const $ab210b2da7b39b9d$export$f5c524615a7708d6 = {
 
 
 
-
-const $120c5a859c012378$export$9dd6ff9ea0189349 = (0, $def2de46b9306e8a$export$dbf350e5966cf602)`
-  .error {
-    color: red;
-  }
-  .dl {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .dt {
-    display: flex;
-    align-content: center;
-    flex-wrap: wrap;
-  }
-  .dd {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, auto) minmax(0, 2fr));
-    margin: 0;
-  }
-  .toggle {
-    padding: 0.6em;
-    border: grey;
-    border-radius: 50%;
-  }
-  .toggle.on {
-    background-color: green;
-  }
-  .toggle.off {
-    background-color: red;
-  }
-  .button {
-    display: block;
-    border: outset 0.2em;
-    border-radius: 50%;
-    border-color: silver;
-    background-color: silver;
-    width: 1.4em;
-    height: 1.4em;
-  }
-  .value {
-    padding-left: 0.5em;
-    display: flex;
-    align-content: center;
-    flex-wrap: wrap;
-  }
-`;
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ const $14742f68afc766d6$export$da64fc29f17f9d0e = (e)=>(n)=>"function" == typeof n ? ((e, n)=>(customElements.define(e, n), n))(e, n) : ((e, n)=>{
+            const { kind: t, elements: s } = n;
+            return {
+                kind: t,
+                elements: s,
+                finisher (n) {
+                    customElements.define(e, n);
+                }
+            };
+        })(e, n);
 
 
 /**
@@ -1153,6 +1209,7 @@ function $9cd908ed2625c047$export$d541bacb2bda4494(n) {
 }
 
 
+
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -1165,152 +1222,409 @@ function $9cd908ed2625c047$export$d541bacb2bda4494(n) {
 }
 
 
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ const $25e9c5a8f7ecfc69$export$29fd0ed4087278b5 = (e, t, o)=>{
+    Object.defineProperty(t, o, e);
+}, $25e9c5a8f7ecfc69$export$18eb0154d0069a01 = (e, t)=>({
+        kind: "method",
+        placement: "prototype",
+        key: t.key,
+        descriptor: e
+    }), $25e9c5a8f7ecfc69$export$757d561a932dc1cb = ({ finisher: e, descriptor: t })=>(o, n)=>{
+        var r;
+        if (void 0 === n) {
+            const n = null !== (r = o.originalKey) && void 0 !== r ? r : o.key, i = null != t ? {
+                kind: "method",
+                placement: "prototype",
+                key: n,
+                descriptor: t(o.key)
+            } : {
+                ...o,
+                key: n
+            };
+            return null != e && (i.finisher = function(t) {
+                e(t, n);
+            }), i;
+        }
+        {
+            const r = o.constructor;
+            void 0 !== t && Object.defineProperty(o, n, t(n)), null == e || e(r, n);
+        }
+    };
 
 
-class $a399cc6bbb0eb26a$export$9eee6fffd22320a0 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
-    // lifecycle interface
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $b4269277b3c48b0c$export$b2b799818fbabcf3(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        finisher: (r, t)=>{
+            Object.assign(r.prototype[t], e);
+        }
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $02a1f3a787c54a30$export$2fa187e846a241c4(i, n) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (o)=>{
+            const t = {
+                get () {
+                    var o, n;
+                    return null !== (n = null === (o = this.renderRoot) || void 0 === o ? void 0 : o.querySelector(i)) && void 0 !== n ? n : null;
+                },
+                enumerable: !0,
+                configurable: !0
+            };
+            if (n) {
+                const n = "symbol" == typeof o ? Symbol() : "__" + o;
+                t.get = function() {
+                    var o, t;
+                    return void 0 === this[n] && (this[n] = null !== (t = null === (o = this.renderRoot) || void 0 === o ? void 0 : o.querySelector(i)) && void 0 !== t ? t : null), this[n];
+                };
+            }
+            return t;
+        }
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $ed34c589b230c255$export$dcd0d083aa86c355(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (r)=>({
+                get () {
+                    var r, o;
+                    return null !== (o = null === (r = this.renderRoot) || void 0 === r ? void 0 : r.querySelectorAll(e)) && void 0 !== o ? o : [];
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $ea50f1870b80cbec$export$163dfc35cc43f240(e) {
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (r)=>({
+                async get () {
+                    var r;
+                    return await this.updateComplete, null === (r = this.renderRoot) || void 0 === r ? void 0 : r.querySelector(e);
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ var $563fcf7ce7e6c5aa$var$n;
+const $563fcf7ce7e6c5aa$var$e = null != (null === ($563fcf7ce7e6c5aa$var$n = window.HTMLSlotElement) || void 0 === $563fcf7ce7e6c5aa$var$n ? void 0 : $563fcf7ce7e6c5aa$var$n.prototype.assignedElements) ? (o, n)=>o.assignedElements(n) : (o, n)=>o.assignedNodes(n).filter((o)=>o.nodeType === Node.ELEMENT_NODE);
+function $563fcf7ce7e6c5aa$export$4682af2d9ee91415(n) {
+    const { slot: l, selector: t } = null != n ? n : {};
+    return (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (o)=>({
+                get () {
+                    var o;
+                    const r = "slot" + (l ? `[name=${l}]` : ":not([name])"), i = null === (o = this.renderRoot) || void 0 === o ? void 0 : o.querySelector(r), s = null != i ? $563fcf7ce7e6c5aa$var$e(i, n) : [];
+                    return t ? s.filter((o)=>o.matches(t)) : s;
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */ function $728f1385dd7bf557$export$1bdbe53f9df1b8(o, n, r) {
+    let l, s = o;
+    return "object" == typeof o ? (s = o.slot, l = o) : l = {
+        flatten: n
+    }, r ? (0, $563fcf7ce7e6c5aa$export$4682af2d9ee91415)({
+        slot: s,
+        flatten: n,
+        selector: r
+    }) : (0, $25e9c5a8f7ecfc69$export$757d561a932dc1cb)({
+        descriptor: (e)=>({
+                get () {
+                    var e, t;
+                    const o = "slot" + (s ? `[name=${s}]` : ":not([name])"), n = null === (e = this.renderRoot) || void 0 === e ? void 0 : e.querySelector(o);
+                    return null !== (t = null == n ? void 0 : n.assignedNodes(l)) && void 0 !== t ? t : [];
+                },
+                enumerable: !0,
+                configurable: !0
+            })
+    });
+}
+
+
+
+
+class $a399cc6bbb0eb26a$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
     setConfig(config) {
-        this._header = config.header === "" ? (0, $f58f44579a4747ac$export$45b790e32b2810ee) : config.header;
-        this._entity = config.entity;
-        // call set hass() to immediately adjust to a changed entity
-        // while editing the entity in the card editor
-        if (this._hass) this.hass = this._hass;
+        this.config = {
+            ...this.config,
+            ...config
+        };
     }
     set hass(hass) {
+        if (this._hass === hass) return;
         this._hass = hass;
-        this._state = hass.states[this._entity];
-        if (this._state) {
-            this._status = this._state.state;
-            let fn = this._state.attributes.friendly_name;
-            this._name = fn ? fn : this._entity;
-        }
+        this._processEntities(hass);
     }
-    static #_ = (()=>{
-        // declarative part
-        this.styles = (0, $120c5a859c012378$export$9dd6ff9ea0189349);
-    })();
+    _processEntities(hass) {
+        const entities = Object.values(hass.states).filter(this.entityStateFilter);
+        if (JSON.stringify(entities) === JSON.stringify(this._entities)) return;
+        this._entities = entities;
+        this._floors = hass.floors || {};
+        this._areas = hass.areas || {};
+    }
     render() {
-        let content;
-        if (!this._state) content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)` <p class="error">${this._entity} is unavailable.</p> `;
-        else content = (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-        <dl class="dl">
-          <dt class="dt">${this._name}</dt>
-          <dd class="dd" @click="${this.doToggle}">
-            <span class="toggle ${this._status}">
-              <span class="button"></span>
-            </span>
-            <span class="value">${this._status}</span>
-          </dd>
-        </dl>
-      `;
+        if (!this._hass) return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`<ha-card><div class="card-content">Loading...</div></ha-card>`;
+        const floors = this._groupAreasByFloor();
         return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-      <ha-card header="${this._header}">
-        <div class="card-content">${content}</div>
+      <ha-card .header=${this.config.header || (0, $f58f44579a4747ac$export$45b790e32b2810ee)}>
+        <div class="card-content">
+          ${Object.values(floors).map((floor)=>this._renderFloor(floor))}
+        </div>
       </ha-card>
     `;
     }
-    // event handling
-    doToggle() {
-        this._hass.callService("input_boolean", "toggle", {
-            entity_id: this._entity
+    _groupAreasByFloor() {
+        const floors = {};
+        Object.values(this._areas).forEach((area)=>{
+            const floorId = area.floor_id || "unknown";
+            if (!floors[floorId]) floors[floorId] = {
+                ...this._floors[floorId],
+                name: this._floors[floorId]?.name || "Unknown Floor",
+                areas: []
+            };
+            floors[floorId].areas.push(area);
         });
+        return floors;
     }
-    // card configuration
-    static getConfigElement() {
-        return document.createElement("toggle-card-typescript-editor");
+    _renderFloor(floor) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <div class="floor">
+        ${this._renderFloorHeader(floor)}
+        ${floor.areas.map((area)=>this._renderArea(area))}
+      </div>
+    `;
+    }
+    _renderFloorHeader(floor) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <h2>
+        ${this.config.show_floor_icons ? this._renderIcon(floor.icon, floor.floor_id) : (0, $f58f44579a4747ac$export$45b790e32b2810ee)}
+        ${floor.name}
+      </h2>
+    `;
+    }
+    _renderArea(area) {
+        const entities = this._getAreaEntities(area);
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <div class="area">
+        <h3>
+          ${this.config.show_area_icons ? this._renderIcon(area.icon) : (0, $f58f44579a4747ac$export$45b790e32b2810ee)}
+          ${area.name}
+        </h3>
+        <div class="entities">
+          ${entities.map((entity)=>this._renderEntity(entity))}
+        </div>
+      </div>
+    `;
+    }
+    _getAreaEntities(area) {
+        return this._entities.filter((entity)=>{
+            const entityArea = this._hass.entities[entity.entity_id]?.area_id || this._hass.devices[this._hass.entities[entity.entity_id]?.device_id]?.area_id;
+            return entityArea === area.area_id;
+        }).sort(this._entitySort);
+    }
+    _renderIcon(icon, fallback) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <ha-icon 
+        .icon=${icon || (fallback ? `mdi:home-floor-${fallback}` : 'mdi:texture-box')}
+        style="margin: 0 8px 4px 0;"
+      ></ha-icon>
+    `;
+    }
+    _renderEntity(entity) {
+        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+      <div class="entity" @click=${()=>this._showMoreInfo(entity)}>
+        <ha-icon 
+          .icon=${this._getEntityIcon(entity)}
+          style="color: ${this._getEntityColor(entity)};"
+        ></ha-icon>
+        <span>${entity.state}</span>
+      </div>
+    `;
+    }
+    _getEntityIcon(entity) {
+        const { entity_id: entity_id, attributes: attributes } = entity;
+        return this.config.preferred_icons[entity_id] || this.config.preferred_icons[attributes.device_class] || attributes.icon || this._defaultIcon(entity_id);
+    }
+    _defaultIcon(entityId) {
+        const [domain] = entityId.split('.');
+        const deviceClass = this._hass.states[entityId].attributes.device_class;
+        switch(domain){
+            case 'light':
+                return 'mdi:lightbulb';
+            case 'binary_sensor':
+                switch(deviceClass){
+                    case 'door':
+                        return 'mdi:door-open';
+                    case 'window':
+                        return 'mdi:window-closed';
+                    case 'occupancy':
+                        return 'mdi:motion-sensor';
+                    case 'tamper':
+                        return 'mdi:alarm-light-outline';
+                    default:
+                        return 'mdi:alert-circle';
+                }
+            default:
+                return 'mdi:alert-circle-outline';
+        }
+    }
+    _getEntityColor(entity) {
+        if (entity.state === 'off' && this.config.off_color) return this.config.off_color;
+        const [domain] = entity.entity_id.split('.');
+        if (domain === 'light' && entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color.join(',')})`;
+        switch(entity.attributes.device_class){
+            case 'door':
+                return 'var(--primary-color)';
+            case 'window':
+                return 'var(--accent-color)';
+            default:
+                return 'var(--secondary-text-color)';
+        }
+    }
+    async _showMoreInfo(entity) {
+        const helpers = await window.loadCardHelpers();
+        helpers.importMoreInfoControl(entity.entity_id);
     }
     static getStubConfig() {
         return {
-            entity: "input_boolean.tcts",
-            header: ""
+            header: "Home Overview",
+            show_floor_icons: "always",
+            show_area_icons: "always",
+            preferred_icons: {
+                tamper: 'mdi:alarm-light-outline'
+            }
+        };
+    }
+    getCardSize() {
+        return 3;
+    }
+    constructor(...args){
+        super(...args), this._entities = [], this._floors = {}, this._areas = {}, this.config = {
+            show_floor_icons: true,
+            floor_icons_position: "left",
+            show_area_icons: true,
+            area_icons_position: "left",
+            icon_placement: "start",
+            domain_sort_order: [
+                "light",
+                "switch",
+                "binary_sensor",
+                "sensor",
+                "climate"
+            ],
+            class_sort_order: [
+                "door",
+                "window",
+                "tamper",
+                "occupancy"
+            ],
+            include_domains: [
+                "light",
+                "input_boolean",
+                "binary_sensor"
+            ],
+            include_classes: [
+                "door",
+                "window",
+                "tamper",
+                "occupancy"
+            ],
+            include_states: [
+                "on"
+            ],
+            includeAll: false,
+            include_hidden: false,
+            preferred_icons: {}
+        }, this.entityStateFilter = (entity)=>{
+            const [domain] = entity.entity_id.split('.');
+            const deviceClass = entity.attributes.device_class;
+            return (this.config.include_domains.includes(domain) && this.config.include_classes.includes(deviceClass) || this.config.includeAll) && this.config.include_states.includes(entity.state) && (!this._hass.entities[entity.entity_id].hidden || this.config.include_hidden);
+        }, this._entitySort = (a, b)=>{
+            const aDomain = a.entity_id.split('.')[0];
+            const bDomain = b.entity_id.split('.')[0];
+            return this.config.domain_sort_order.indexOf(aDomain) - this.config.domain_sort_order.indexOf(bDomain);
         };
     }
 }
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $a399cc6bbb0eb26a$export$9eee6fffd22320a0.prototype, "_header", void 0);
+], $a399cc6bbb0eb26a$export$2e2bcd8739ae039.prototype, "_hass", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $a399cc6bbb0eb26a$export$9eee6fffd22320a0.prototype, "_entity", void 0);
+], $a399cc6bbb0eb26a$export$2e2bcd8739ae039.prototype, "_entities", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $a399cc6bbb0eb26a$export$9eee6fffd22320a0.prototype, "_name", void 0);
+], $a399cc6bbb0eb26a$export$2e2bcd8739ae039.prototype, "_floors", void 0);
 (0, $24c52f343453d62d$export$29e00dfd3077644b)([
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $a399cc6bbb0eb26a$export$9eee6fffd22320a0.prototype, "_state", void 0);
-(0, $24c52f343453d62d$export$29e00dfd3077644b)([
-    (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $a399cc6bbb0eb26a$export$9eee6fffd22320a0.prototype, "_status", void 0);
+], $a399cc6bbb0eb26a$export$2e2bcd8739ae039.prototype, "_areas", void 0);
+$a399cc6bbb0eb26a$export$2e2bcd8739ae039 = (0, $24c52f343453d62d$export$29e00dfd3077644b)([
+    (0, $14742f68afc766d6$export$da64fc29f17f9d0e)("floors-card")
+], $a399cc6bbb0eb26a$export$2e2bcd8739ae039);
 
 
-
-
-
-class $d067581fc0d59830$export$428b02af6307b05 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
-    setConfig(config) {
-        this._config = config;
-    }
-    static #_ = (()=>{
-        this.styles = (0, $def2de46b9306e8a$export$dbf350e5966cf602)`
-    .table {
-      display: table;
-    }
-    .row {
-      display: table-row;
-    }
-    .cell {
-      display: table-cell;
-      padding: 0.5em;
-    }
-  `;
-    })();
-    render() {
-        return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
-            <form class="table">
-                <div class="row">
-                    <label class="label cell" for="header">Header:</label>
-                    <input
-                        @change="${this.handleChangedEvent}"
-                        class="value cell" id="header" value="${this._config.header}"></input>
-                </div>
-                <div class="row">
-                    <label class="label cell" for="entity">Entity:</label>
-                    <input
-                        @change="${this.handleChangedEvent}"
-                        class="value cell" id="entity" value="${this._config.entity}"></input>
-                </div>
-            </form>
-        `;
-    }
-    handleChangedEvent(changedEvent) {
-        const target = changedEvent.target;
-        // this._config is readonly, copy needed
-        const newConfig = Object.assign({}, this._config);
-        if (target.id == "header") newConfig.header = target.value;
-        else if (target.id == "entity") newConfig.entity = target.value;
-        const messageEvent = new CustomEvent("config-changed", {
-            detail: {
-                config: newConfig
-            },
-            bubbles: true,
-            composed: true
-        });
-        this.dispatchEvent(messageEvent);
-    }
-}
-(0, $24c52f343453d62d$export$29e00dfd3077644b)([
-    (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
-], $d067581fc0d59830$export$428b02af6307b05.prototype, "_config", void 0);
-
-
-customElements.define("toggle-card-typescript", (0, $a399cc6bbb0eb26a$export$9eee6fffd22320a0));
-customElements.define("toggle-card-typescript-editor", (0, $d067581fc0d59830$export$428b02af6307b05));
-window.customCards = window.customCards || [];
-window.customCards.push({
-    type: "toggle-card-typescript",
-    name: "toggle card with TypeScript",
-    description: "Turn an entity on and off"
-});
+// import { FloorsCardEditor } from "./editor";
+// declare global {
+//   interface Window {
+//     customCards: Array<Object>;
+//   }
+// }
+customElements.define("floors-card", (0, $a399cc6bbb0eb26a$export$2e2bcd8739ae039)); // customElements.define(
+ //   "floors-card-editor",
+ //   FloorsCardEditor
+ // );
+ // window.customCards = window.customCards || [];
+ // window.customCards.push({
+ //   type: "floors-card",
+ //   name: "toggle card with TypeScript",
+ //   description: "Turn an entity on and off",
+ // });
 
 
 //# sourceMappingURL=card.js.map

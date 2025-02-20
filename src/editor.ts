@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators/state";
 
-export class ToggleCardTypeScriptEditor extends LitElement {
+export class FloorsCardEditor extends LitElement {
   @state() _config;
 
   setConfig(config) {
