@@ -5,5 +5,9 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
-  }
+    "baseUrl": "./src",
+    "paths": {
+      "#hass-types": ["../hass-types"]
+    }
+  },
 }

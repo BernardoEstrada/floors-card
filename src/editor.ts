@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { state } from "lit/decorators/state";
 
-export class FloorsCardEditor extends LitElement {
+export default class FloorsCardEditor extends LitElement {
   @state() _config;
 
   setConfig(config) {
