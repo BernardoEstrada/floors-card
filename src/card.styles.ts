@@ -1,47 +1,86 @@
 import { css } from "lit";
 
 export const styles = css`
-  .error {
-    color: red;
-  }
-  .dl {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .dt {
-    display: flex;
-    align-content: center;
-    flex-wrap: wrap;
-  }
-  .dd {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, auto) minmax(0, 2fr));
-    margin: 0;
-  }
-  .toggle {
-    padding: 0.6em;
-    border: grey;
-    border-radius: 50%;
-  }
-  .toggle.on {
-    background-color: green;
-  }
-  .toggle.off {
-    background-color: red;
-  }
-  .button {
+  :host {
     display: block;
-    border: outset 0.2em;
-    border-radius: 50%;
-    border-color: silver;
-    background-color: silver;
-    width: 1.4em;
-    height: 1.4em;
+    /* padding: 16px; */
   }
-  .value {
-    padding-left: 0.5em;
+  h2 {
+    margin: 0;
     display: flex;
-    align-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    &.icon-right {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      > ha-icon {
+        margin-left: 8px;
+      }
+    }
+    &.icon-left {
+      flex-direction: row;
+      justify-content: flex-start;
+      > ha-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  h3 {
+    margin-right: 8px;
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    &.icon-right {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      > ha-icon {
+        margin-left: 8px;
+      }
+    }
+    &.icon-left {
+      flex-direction: row;
+      justify-content: flex-start;
+      > ha-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  ha-card {
+    overflow: hidden;
+    /* padding: 16px; */
+    border-radius: var(--ha-card-border-radius, 12px);
+    box-shadow: var(--ha-card-box-shadow, 0px 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  .card-content {
+    display: flex;
+    flex-direction: column;
+  }
+  .floor {
+    /* margin-bottom: 24px; */
+  }
+  .area {
+    /* margin: 8px 0; */
+    display: flex;
+    align-items: center;
+    &.entity-icons-right {
+      justify-content: space-between;
+    }
+    &.entity-icons-left {
+      justify-content: flex-start;
+    }
+  }
+  .entities {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5em;
+  }
+  .entity-card-button {
+    border-radius: 50%;
+    --mdc-icon-button-size: 36px;
+  }
+  .entity-card-button ha-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    --mdc-icon-size: 0.9em;
   }
 `;
