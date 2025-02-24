@@ -32,7 +32,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b build-update-${{ github.run_id }}
-          git add -f build  # Force add build folder
+          git add -f dist  # Force add build folder
           git commit -m "chore: update build output [CI skip]" || exit 0
           git push origin build-update-${{ github.run_id }}
 
