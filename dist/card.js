@@ -93,8 +93,8 @@ const $fc06ea80e364174b$export$f84bd70098573c5c = {
 };
 
 
-console.log("development");
-const $b64b39d05b92d8dd$export$bc459fcbbdf9c595 = 'floors-card-dev';
+console.log("production");
+const $b64b39d05b92d8dd$export$bc459fcbbdf9c595 = 'floors-card';
 console.log($b64b39d05b92d8dd$export$bc459fcbbdf9c595);
 
 
@@ -2154,7 +2154,7 @@ class $d067581fc0d59830$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$exp
 ], $d067581fc0d59830$export$2e2bcd8739ae039.prototype, "_config", void 0);
 
 
-console.log("development");
+console.log("production");
 console.log((0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595));
 customElements.define((0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595), (0, $a399cc6bbb0eb26a$export$2e2bcd8739ae039));
 customElements.define(`${(0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595)}-editor`, (0, $d067581fc0d59830$export$2e2bcd8739ae039));
