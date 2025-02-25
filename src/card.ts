@@ -17,10 +17,11 @@ import {
 import {
   configValidator,
   stubConfig,
-  defaultConfig
+  defaultConfig,
+  cardName
 } from "./helpers";
 
-@customElement("floors-card")
+@customElement(cardName)
 export default class FloorsCard extends LitElement {
   private _hass?: HomeAssistant;
   @state() private _entities: HassEntity[] = [];
@@ -397,11 +398,5 @@ export default class FloorsCard extends LitElement {
 
   getCardSize(): number {
     return 3;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "floors-card": FloorsCard;
   }
 }
