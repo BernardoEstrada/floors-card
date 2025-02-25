@@ -63,6 +63,7 @@ const $f0c6e8b60525d698$export$6c85bd7d048585e = {
 const $fc06ea80e364174b$export$f84bd70098573c5c = {
     show_floor_icons: true,
     floor_gap: 8,
+    area_gap: 8,
     floor_icons_position: "left",
     show_area_icons: true,
     default_area_icon: "mdi:texture-box",
@@ -1500,6 +1501,7 @@ const $120c5a859c012378$export$9dd6ff9ea0189349 = (0, $def2de46b9306e8a$export$d
     margin: 0;
     display: flex;
     align-items: center;
+    font-weight: 500;
     &.icon-right {
       flex-direction: row-reverse;
       justify-content: flex-end;
@@ -1516,10 +1518,10 @@ const $120c5a859c012378$export$9dd6ff9ea0189349 = (0, $def2de46b9306e8a$export$d
     }
   }
   h3 {
-    margin-right: 8px;
-    margin-left: 16px;
+    margin: 0 8px 0 16px;
     display: flex;
     align-items: center;
+    font-weight: 400;
     &.icon-right {
       flex-direction: row-reverse;
       justify-content: flex-end;
@@ -1546,6 +1548,9 @@ const $120c5a859c012378$export$9dd6ff9ea0189349 = (0, $def2de46b9306e8a$export$d
     flex-direction: column;
   }
   .floor {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
     /* margin-bottom: 24px; */
   }
   .area {
@@ -1880,9 +1885,11 @@ class $a399cc6bbb0eb26a$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$exp
         return Object.values(floors).map((floor)=>{
             const renderedAreas = floor.areas.map((area)=>this._renderArea(area));
             if (renderedAreas.every((area)=>area === (0, $f58f44579a4747ac$export$45b790e32b2810ee))) return 0, $f58f44579a4747ac$export$45b790e32b2810ee;
-            return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)` <div class="floor">
-        ${this._renderFloorHeader(floor)} ${renderedAreas}
-      </div>`;
+            return (0, $f58f44579a4747ac$export$c0bb0b647f701bb5)`
+        <div style="gap: ${this.config.floor_gap}px" class="floor">
+          ${this._renderFloorHeader(floor)} ${renderedAreas}
+        </div>
+      `;
         });
     }
     _groupAreasByFloor() {
