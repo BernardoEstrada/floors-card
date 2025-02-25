@@ -48,4 +48,4 @@ jobs:
           base: main
           labels: "automerge"
           add-paths: |
-            dist
+            dist/**
