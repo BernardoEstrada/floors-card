@@ -47,3 +47,5 @@ jobs:
           body: "This PR updates the build output after the latest commit to main."
           base: main
           labels: "automerge"
+          add-paths: |
+            dist
