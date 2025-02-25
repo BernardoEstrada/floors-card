@@ -39,9 +39,10 @@ The card can be configured using the Lovelace UI or by editing the `floors-card.
 | `off_color`               | Color                                        | "grey"                                                    | The color to use for entities that are off.                                                        |
 | `show_floor_icons`        | boolean                                      | true                                                      | Whether to show floor icons.                                                                       |
 | `floor_icons_position`    | 'left' or 'right'                            | "left"                                                    | The position of the floor icons.                                                                   |
-| `floor_gap`               | number                                       | 8                                                         | The gap between floors.                                                                            |
+| `floor_gap`               | number                                       | 8                                                         | The gap between floors in px.                                                                      |
 | `show_area_icons`         | boolean                                      | true                                                      | Whether to show area icons.                                                                        |
 | `area_icons_position`     | 'left' or 'right'                            | "left"                                                    | The position of the area icons.                                                                    |
+| `area_gap`                | number                                       | 8                                                         | The gap between areas in px.
 | `default_area_icon`       | string                                       | "mdi:texture-box"                                       | The default icon to use for areas.                                                                 |
 | `entity_icon_placement`   | 'left' or 'right'                            | "right"                                                   | The position of the entity icons.                                                                  |
 | `domain_sort_order`       | Domain[]                                     | ["light", "switch", "binary_sensor", "sensor", "climate"] | The order to sort domains by.                                                                      |
@@ -112,8 +113,7 @@ include:
 
 #### Basic
 
-This configuration includes all entities with the `on` state, including lights, input_booleans, binary_sensors, and entities with a class of `door`, `window`, `tamper`, `occupancy`, or `no_class`.
-`no_class` is added so lights are shown, however, this also shows `binary_sensors` with no class, which may be unwanted behavior (Like the unknown class in the Roof Patio in my example).
+This configuratided so lights are shown, however, this also shows `binary_sensors` with no class, which may be unwanted behavior (Like the unknown class in the Roof Patio in my example).
 ```yaml
 type: custom:floors-card
 include_states: ["on"]
