@@ -3,6 +3,7 @@ import type { FloorCardConfig } from "types";
 export const defaultConfig: FloorCardConfig = {
   show_floor_icons: true,
   floor_gap: 8,
+  area_gap: 8,
   floor_icons_position: "left",
   show_area_icons: true,
   default_area_icon: "mdi:texture-box",

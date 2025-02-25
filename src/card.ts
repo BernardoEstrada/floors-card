@@ -117,9 +117,11 @@ export default class FloorsCard extends LitElement {
       const renderedAreas = floor.areas.map((area) => this._renderArea(area));
       if (renderedAreas.every((area) => area === nothing)) return nothing;
 
-      return html` <div class="floor">
-        ${this._renderFloorHeader(floor)} ${renderedAreas}
-      </div>`;
+      return html`
+        <div style="gap: ${this.config.floor_gap}px" class="floor">
+          ${this._renderFloorHeader(floor)} ${renderedAreas}
+        </div>
+      `;
     });
   }
 

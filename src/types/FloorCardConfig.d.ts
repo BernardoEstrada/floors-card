@@ -9,6 +9,7 @@ export interface FloorCardConfig {
   show_floor_icons: boolean | 'always';
   floor_icons_position: 'left' | 'right';
   floor_gap: number;
+  area_gap: number;
   show_area_icons: boolean | 'always';
   default_area_icon: string;
   area_icons_position: 'left' | 'right';

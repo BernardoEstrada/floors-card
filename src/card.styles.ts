@@ -9,6 +9,7 @@ export const styles = css`
     margin: 0;
     display: flex;
     align-items: center;
+    font-weight: 500;
     &.icon-right {
       flex-direction: row-reverse;
       justify-content: flex-end;
@@ -25,10 +26,10 @@ export const styles = css`
     }
   }
   h3 {
-    margin-right: 8px;
-    margin-left: 16px;
+    margin: 0 8px 0 16px;
     display: flex;
     align-items: center;
+    font-weight: 400;
     &.icon-right {
       flex-direction: row-reverse;
       justify-content: flex-end;
@@ -55,6 +56,9 @@ export const styles = css`
     flex-direction: column;
   }
   .floor {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
     /* margin-bottom: 24px; */
   }
   .area {
