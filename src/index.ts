@@ -1,3 +1,4 @@
+import { cardName } from "helpers";
 import FloorsCard from "./card";
 import FloorsCardEditor from "./editor";
 
@@ -5,17 +6,24 @@ declare global {
   interface Window {
     customCards: Array<Object>;
   }
+  interface HTMLElementTagNameMap {
+    'floors-card': FloorsCard;
+    'floors-card-dev': FloorsCard;
+  }
 }
 
-customElements.define("floors-card", FloorsCard);
+console.log(process.env.NODE_ENV);
+console.log(cardName);
+
+customElements.define(cardName, FloorsCard);
 customElements.define(
-  "floors-card-editor",
+  `${cardName}-editor`,
   FloorsCardEditor
 );
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: "floors-card",
+  type: cardName,
   name: "toggle card with TypeScript",
   description: "Turn an entity on and off",
 });

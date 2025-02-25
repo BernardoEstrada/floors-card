@@ -1,3 +1,105 @@
+const $cf7d3955166dec37$export$7acbea3223c80a5d = (config)=>{
+    if (config.show_floor_icons !== undefined) {
+        if (typeof config.show_floor_icons !== "boolean" && config.show_floor_icons !== "always") throw new Error("Invalid show_floor_icons value");
+    }
+    if (config.floor_icons_position !== undefined) {
+        if (typeof config.floor_icons_position !== "string" || config.floor_icons_position !== "left" && config.floor_icons_position !== "right") throw new Error("Invalid floor_icons_position value");
+    }
+    if (config.show_area_icons !== undefined) {
+        if (typeof config.show_area_icons !== "boolean" && config.show_area_icons !== "always") throw new Error("Invalid show_area_icons value");
+    }
+    if (config.area_icons_position !== undefined) {
+        if (typeof config.area_icons_position !== "string" || config.area_icons_position !== "left" && config.area_icons_position !== "right") throw new Error("Invalid area_icons_position value");
+    }
+    if (config.entity_icon_placement !== undefined) {
+        if (typeof config.entity_icon_placement !== "string" || config.entity_icon_placement !== "left" && config.entity_icon_placement !== "right") throw new Error("Invalid entity_icon_placement value");
+    }
+    if (config.domain_sort_order !== undefined) {
+        if (!Array.isArray(config.domain_sort_order)) throw new Error("Invalid domain_sort_order value");
+        for (const domain of config.domain_sort_order){
+            if (typeof domain !== "string") throw new Error("Invalid domain_sort_order value");
+        }
+    }
+    if (config.class_sort_order !== undefined) {
+        if (!Array.isArray(config.class_sort_order)) throw new Error("Invalid class_sort_order value");
+        for (const className of config.class_sort_order){
+            if (typeof className !== "string") throw new Error("Invalid class_sort_order value");
+        }
+    }
+    if (config.include_domains !== undefined) {
+        if (!Array.isArray(config.include_domains)) throw new Error("Invalid include_domains value");
+        for (const domain of config.include_domains){
+            if (typeof domain !== "string") throw new Error("Invalid include_domains value");
+        }
+    }
+    if (config.include_classes !== undefined) {
+        if (!Array.isArray(config.include_classes)) throw new Error("Invalid include_classes value");
+        for (const className of config.include_classes){
+            if (typeof className !== "string") throw new Error("Invalid include_classes value");
+        }
+    }
+    if (config.include_states !== undefined) {
+        if (!Array.isArray(config.include_states)) throw new Error("Invalid include_states value");
+        for (const state of config.include_states){
+            if (typeof state !== "string") throw new Error("Invalid include_states value");
+        }
+    }
+    if (config.include !== undefined) {
+        if (typeof config.include !== "object") throw new Error("Invalid include value");
+    }
+};
+
+
+const $f0c6e8b60525d698$export$6c85bd7d048585e = {
+    header: "Home Overview",
+    show_floor_icons: "always",
+    show_area_icons: "always",
+    preferred_icons: {
+        tamper: "mdi:alarm-light-outline"
+    }
+};
+
+
+const $fc06ea80e364174b$export$f84bd70098573c5c = {
+    show_floor_icons: true,
+    floor_gap: 8,
+    floor_icons_position: "left",
+    show_area_icons: true,
+    default_area_icon: "mdi:texture-box",
+    off_color: "grey",
+    area_icons_position: "left",
+    entity_icon_placement: "right",
+    domain_sort_order: [
+        "light",
+        "switch",
+        "binary_sensor",
+        "sensor",
+        "climate"
+    ],
+    class_sort_order: [
+        "door",
+        "window",
+        "tamper",
+        "occupancy"
+    ],
+    // include: {
+    //   light: { states: ["on"] },
+    //   input_boolean: { states: ["on"] },
+    //   binary_sensor: { states: ["on"], classes: ["door", "window", "occupancy", "tamper"] },
+    // },
+    include_all: false,
+    include_hidden: false,
+    preferred_icons: {}
+};
+
+
+console.log("development");
+const $b64b39d05b92d8dd$export$bc459fcbbdf9c595 = 'floors-card-dev';
+console.log($b64b39d05b92d8dd$export$bc459fcbbdf9c595);
+
+
+
+
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -1705,102 +1807,6 @@ const $946b345e72533d5d$export$a40009bd2c363351 = (0, $107bb7d062dde330$export$9
 
 
 
-const $cf7d3955166dec37$export$7acbea3223c80a5d = (config)=>{
-    if (config.show_floor_icons !== undefined) {
-        if (typeof config.show_floor_icons !== "boolean" && config.show_floor_icons !== "always") throw new Error("Invalid show_floor_icons value");
-    }
-    if (config.floor_icons_position !== undefined) {
-        if (typeof config.floor_icons_position !== "string" || config.floor_icons_position !== "left" && config.floor_icons_position !== "right") throw new Error("Invalid floor_icons_position value");
-    }
-    if (config.show_area_icons !== undefined) {
-        if (typeof config.show_area_icons !== "boolean" && config.show_area_icons !== "always") throw new Error("Invalid show_area_icons value");
-    }
-    if (config.area_icons_position !== undefined) {
-        if (typeof config.area_icons_position !== "string" || config.area_icons_position !== "left" && config.area_icons_position !== "right") throw new Error("Invalid area_icons_position value");
-    }
-    if (config.entity_icon_placement !== undefined) {
-        if (typeof config.entity_icon_placement !== "string" || config.entity_icon_placement !== "left" && config.entity_icon_placement !== "right") throw new Error("Invalid entity_icon_placement value");
-    }
-    if (config.domain_sort_order !== undefined) {
-        if (!Array.isArray(config.domain_sort_order)) throw new Error("Invalid domain_sort_order value");
-        for (const domain of config.domain_sort_order){
-            if (typeof domain !== "string") throw new Error("Invalid domain_sort_order value");
-        }
-    }
-    if (config.class_sort_order !== undefined) {
-        if (!Array.isArray(config.class_sort_order)) throw new Error("Invalid class_sort_order value");
-        for (const className of config.class_sort_order){
-            if (typeof className !== "string") throw new Error("Invalid class_sort_order value");
-        }
-    }
-    if (config.include_domains !== undefined) {
-        if (!Array.isArray(config.include_domains)) throw new Error("Invalid include_domains value");
-        for (const domain of config.include_domains){
-            if (typeof domain !== "string") throw new Error("Invalid include_domains value");
-        }
-    }
-    if (config.include_classes !== undefined) {
-        if (!Array.isArray(config.include_classes)) throw new Error("Invalid include_classes value");
-        for (const className of config.include_classes){
-            if (typeof className !== "string") throw new Error("Invalid include_classes value");
-        }
-    }
-    if (config.include_states !== undefined) {
-        if (!Array.isArray(config.include_states)) throw new Error("Invalid include_states value");
-        for (const state of config.include_states){
-            if (typeof state !== "string") throw new Error("Invalid include_states value");
-        }
-    }
-    if (config.include !== undefined) {
-        if (typeof config.include !== "object") throw new Error("Invalid include value");
-    }
-};
-
-
-const $f0c6e8b60525d698$export$6c85bd7d048585e = {
-    header: "Home Overview",
-    show_floor_icons: "always",
-    show_area_icons: "always",
-    preferred_icons: {
-        tamper: "mdi:alarm-light-outline"
-    }
-};
-
-
-const $fc06ea80e364174b$export$f84bd70098573c5c = {
-    show_floor_icons: true,
-    floor_gap: 8,
-    floor_icons_position: "left",
-    show_area_icons: true,
-    default_area_icon: "mdi:texture-box",
-    off_color: "grey",
-    area_icons_position: "left",
-    entity_icon_placement: "right",
-    domain_sort_order: [
-        "light",
-        "switch",
-        "binary_sensor",
-        "sensor",
-        "climate"
-    ],
-    class_sort_order: [
-        "door",
-        "window",
-        "tamper",
-        "occupancy"
-    ],
-    // include: {
-    //   light: { states: ["on"] },
-    //   input_boolean: { states: ["on"] },
-    //   binary_sensor: { states: ["on"], classes: ["door", "window", "occupancy", "tamper"] },
-    // },
-    include_all: false,
-    include_hidden: false,
-    preferred_icons: {}
-};
-
-
-
 
 class $a399cc6bbb0eb26a$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$export$3f2f9f5909897157) {
     static{
@@ -2082,7 +2088,7 @@ class $a399cc6bbb0eb26a$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$exp
     (0, $04c21ea1ce1f6057$export$ca000e230c0caa3e)()
 ], $a399cc6bbb0eb26a$export$2e2bcd8739ae039.prototype, "_areas", void 0);
 $a399cc6bbb0eb26a$export$2e2bcd8739ae039 = (0, $24c52f343453d62d$export$29e00dfd3077644b)([
-    (0, $14742f68afc766d6$export$da64fc29f17f9d0e)("floors-card")
+    (0, $14742f68afc766d6$export$da64fc29f17f9d0e)((0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595))
 ], $a399cc6bbb0eb26a$export$2e2bcd8739ae039);
 
 
@@ -2148,11 +2154,13 @@ class $d067581fc0d59830$export$2e2bcd8739ae039 extends (0, $ab210b2da7b39b9d$exp
 ], $d067581fc0d59830$export$2e2bcd8739ae039.prototype, "_config", void 0);
 
 
-customElements.define("floors-card", (0, $a399cc6bbb0eb26a$export$2e2bcd8739ae039));
-customElements.define("floors-card-editor", (0, $d067581fc0d59830$export$2e2bcd8739ae039));
+console.log("development");
+console.log((0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595));
+customElements.define((0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595), (0, $a399cc6bbb0eb26a$export$2e2bcd8739ae039));
+customElements.define(`${(0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595)}-editor`, (0, $d067581fc0d59830$export$2e2bcd8739ae039));
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "floors-card",
+    type: (0, $b64b39d05b92d8dd$export$bc459fcbbdf9c595),
     name: "toggle card with TypeScript",
     description: "Turn an entity on and off"
 });
