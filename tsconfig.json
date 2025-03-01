@@ -1,8 +1,21 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "isolatedModules": true,
     "target": "es2017",
+    "module": "esnext",
     "moduleResolution": "node",
+    "lib": ["es2017", "dom", "dom.iterable"],
+    "noEmit": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "rootDir": ".",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "baseUrl": "./src",
@@ -10,4 +23,6 @@
       "#hass-types": ["../hass-types"]
     }
   },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }

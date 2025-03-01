@@ -1,8 +1,21 @@
-node_modules/
-.parcel-cache/
+node_modules
 .yarn
 .pnp.*
+dist
+.hass_dev/*
+!.hass_dev/configuration.yaml
+!.hass_dev/lovelace.yaml
+!.hass_dev/floors-card-showcase.yaml
+!.hass_dev/lovelace.yaml
+!.hass_dev/automations.yaml
+!.hass_dev/scripts.yaml
+!.hass_dev/scenes.yaml
+!.hass_dev/views
+!.hass_dev/www
+!.hass_dev/packages
+.hass_dev/www/community/*
 
-# Ignore build folder except in GitHub Actions
-dist/
-!/.github/workflows/
+# Mac OS
+.DS_Store
+.vscode/settings.json
+.idea

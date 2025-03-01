@@ -56,9 +56,9 @@ export default class FloorsCard extends LitElement {
     const newEntities = Object.values(hass.states).filter(this.entityStateFilter);
     const entitiesChanged = 
         newEntities.length !== this._entities.length ||
-        newEntities.some((e, i) => 
+        newEntities.some((e, i) =>
             e.entity_id !== this._entities[i]?.entity_id ||
-            e.last_changed !== this._entities[i]?.last_changed
+            e.last_updated !== this._entities[i]?.last_updated
         );
     
     if (!entitiesChanged) return false;
@@ -75,14 +75,13 @@ export default class FloorsCard extends LitElement {
   private entityStateFilter = (entity: HassEntity): boolean => {
     const domain = entity.entity_id.split(".")[0];
     const deviceClass = entity.attributes.device_class || 'no_class';
-    
     if (this.config.include) {
         const include = this.config.include[domain];
         if (include) {
             if (include.classes && !include.classes.includes(deviceClass)) return false;
             if (include.states && !include.states.includes(entity.state)) return false;
             if (this.config.include_states && !this.config.include_states.includes(entity.state)) return false;
-            if (this._hass.entities[entity.entity_id]?.hidden && !this.config.include_hidden) return false;
+            if (this?._hass?.entities[entity.entity_id]?.hidden && !this.config.include_hidden) return false;
             return true;
         }
         return false;
@@ -180,11 +179,12 @@ export default class FloorsCard extends LitElement {
   private _getAreaEntities(area: AreaRegistryEntry): HassEntity[] {
     return this._entities
       .filter((entity) => {
-        const entityArea =
-          this._hass!.entities[entity.entity_id]?.area_id ||
-          this._hass!.devices[this._hass!.entities[entity.entity_id]?.device_id]
-            ?.area_id;
-        return entityArea === area.area_id;
+        const entityArea = this._hass!.entities[entity.entity_id]?.area_id
+        const deviceArea =
+          this._hass!.devices[
+            this._hass!.entities[entity.entity_id]?.device_id || ""
+          ]?.area_id;
+        return (entityArea || deviceArea) === area.area_id;
       })
       .sort(this._entitySort);
   }
@@ -297,6 +297,7 @@ export default class FloorsCard extends LitElement {
 
   private _createEntityCardConfig(entity_id: string): LovelaceCardConfig {
     return {
+      type: 'none',
       ...this.config.entity_card,
       entity: entity_id,
       icon: this._getEntityIcon(entity_id),
