@@ -1,5 +1,11 @@
 {
   "type": "module",
+  "version": "0.1.0",
+  "author": "Bernardo Estrada",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BernardoEstrada/floors-card"
+  },
   "scripts": {
     "start": "rollup -c --watch --bundleConfigAsCjs",
     "build": "rollup -c --bundleConfigAsCjs",
