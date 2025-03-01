@@ -1,0 +1,17 @@
+default_config:
+
+tts:
+  - platform: google_translate
+
+demo:
+
+
+automation: !include automations.yaml
+
+lovelace: !include lovelace.yaml
+
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - http://localhost:4000/card.js
+#   development_repo: /workspaces/home-assistant-frontend

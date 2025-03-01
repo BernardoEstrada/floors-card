@@ -1,0 +1,20 @@
+title: Main
+icon: mdi:home
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: New section
+      - type: custom:floors-card
+        include_states:
+          - 'on'
+        area_gap: 30
+        include:
+          light: {}
+          input_boolean: {}
+          binary_sensor:
+            classes:
+              - door
+              - window
+              - occupancy
+              - tamper

@@ -12,9 +12,6 @@ declare global {
   }
 }
 
-console.log(process.env.NODE_ENV);
-console.log(cardName);
-
 customElements.define(cardName, FloorsCard);
 customElements.define(
   `${cardName}-editor`,
