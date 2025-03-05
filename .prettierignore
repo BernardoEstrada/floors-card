@@ -1,5 +1,3 @@
-node_modules
-dist
-.hass_dev/*
-package-lock.json
-package.json
+*
+!src/**/*.{js,jsx,ts,tsx}
+!*.{js,jsx,ts,tsx}

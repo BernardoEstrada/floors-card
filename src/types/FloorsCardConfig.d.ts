@@ -1,10 +1,10 @@
 import type { LovelaceCardConfig } from "#hass-types";
 import type { Domain, DomainIncludes } from "./Domain";
 
-export interface FloorCardConfig {
+export interface FloorsCardConfig implements LovelaceCardConfig {
   entities_container_card?: LovelaceCardConfig & { cards_param: string };
   entity_card?: LovelaceCardConfig;
-  header?: string;
+  heading?: string;
   off_color: string;
   show_floor_icons: boolean | 'always';
   floor_icons_position: 'left' | 'right';

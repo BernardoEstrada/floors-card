@@ -1,6 +1,6 @@
-import type { FloorCardConfig } from "types";
+import type { FloorsCardConfig } from "types";
 
-export const defaultConfig: FloorCardConfig = {
+export const fallbackConfig: FloorsCardConfig = {
   show_floor_icons: true,
   floor_gap: 8,
   area_gap: 8,
