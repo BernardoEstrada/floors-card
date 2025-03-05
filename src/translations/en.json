@@ -1,0 +1,38 @@
+{
+  "editor": {
+    "card": {
+      "generic": {
+      },
+      "floors": {
+        "heading": "Heading",
+        "off_color": "Off Color",
+        "floor_config": "Floor Configuration",
+        "show_floor_icons": "Show Icons",
+        "floor_icons_position": "Icons Position",
+        "floor_gap": "Gap",
+        "area_config": "Area Configuration",
+        "show_area_icons": "Show Icons",
+        "area_icons_position": "Icons Position",
+        "default_area_icon": "Default Icon",
+        "area_gap": "Gap",
+        "entity_icon_placement": "Entity Icon Placement",
+        "class_sort_order": "Sort Order by Class",
+        "domain_sort_order": "Sort Order by Domain",
+        "include_domains": "Domains to Include",
+        "include_classes": "Classes to Include",
+        "include_states": "States to Include",
+        "include": "Include",
+        "include_all": "Include All",
+        "include_hidden": "Include Hidden",
+        "preferred_icons": "Preferred Icons",
+        "entities_container_card": "Entities Container Card",
+        "entity_card": "Entity Card",
+        "sorting": "Sorting",
+        "includes": "Filters"
+      }
+    }
+  },
+  "card": {
+    "not_found": "Entity not found"
+  }
+}

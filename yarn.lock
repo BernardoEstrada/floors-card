@@ -4067,6 +4067,7 @@ __metadata:
     rollup: "npm:^4.34.8"
     rollup-plugin-dev: "npm:^2.0.5"
     rollup-plugin-serve: "npm:^2.0.3"
+    superstruct: "npm:^2.0.2"
     tslib: "npm:^2.8.1"
     typescript: "npm:^5.8.2"
   languageName: unknown
@@ -4353,6 +4354,13 @@ __metadata:
   version: 0.15.5
   resolution: "superstruct@npm:0.15.5"
   checksum: 10c0/73ae2043443dcc7868da6e8b4e4895410c79a88e021b514c665161199675ee920d5eadd85bb9dee5a9f515817e62f4b65a67ccb82d29f73259d012afcbcd3ce4
+  languageName: node
+  linkType: hard
+
+"superstruct@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "superstruct@npm:2.0.2"
+  checksum: 10c0/c6853db5240b4920f47b3c864dd1e23ede6819ea399ad29a65387d746374f6958c5f1c5b7e5bb152d9db117a74973e5005056d9bb83c24e26f18ec6bfae4a718
   languageName: node
   linkType: hard
 

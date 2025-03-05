@@ -1,0 +1,38 @@
+{
+  "editor": {
+    "card": {
+      "generic": {
+      },
+      "floors": {
+        "heading": "Título",
+        "off_color": "Color Apagado",
+        "floor_config": "Configuración de Piso",
+        "show_floor_icons": "Mostrar Iconos",
+        "floor_icons_position": "Posición de los Iconos",
+        "floor_gap": "Espacio",
+        "area_config": "Configuración de Área",
+        "show_area_icons": "Mostrar Iconos",
+        "area_icons_position": "Posición de los Iconos",
+        "default_area_icon": "Icono por Defecto",
+        "area_gap": "Espacio",
+        "entity_icon_placement": "Posición de Iconos de Entidades",
+        "class_sort_order": "Ordenar por Clase",
+        "domain_sort_order": "Ordenar por Dominio",
+        "include_domains": "Dominios a Incluir",
+        "include_classes": "Clases a Incluir",
+        "include_states": "Estados a Incluir",
+        "include": "Incluir",
+        "include_all": "Incluir Todo",
+        "include_hidden": "Incluir Ocultos",
+        "preferred_icons": "Iconos Preferidos",
+        "entities_container_card": "Tarjeta Contenedor de Entidades",
+        "entity_card": "Tarjeta de Entidad",
+        "sorting": "Ordenar",
+        "includes": "Filtros"
+      }
+    }
+  },
+  "card": {
+    "not_found": "Entidad no encontrada"
+  }
+}

@@ -8,19 +8,27 @@ import {
   LovelaceCardConfig,
   FloorRegistryEntry,
   AreaRegistryEntry,
-} from "#hass-types";
+} from "./hass-types";
 import {
-  FloorCardConfig,
+  FloorsCardConfig,
   Domain,
   FloorWithAreas,
 } from "./types";
 import {
   configValidator,
   stubConfig,
-  defaultConfig,
-  cardName
+  fallbackConfig,
+  cardName,
+  registerCard,
 } from "./helpers";
+import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
 
+
+registerCard({
+  type: cardName,
+  name: "Floors Card",
+  description: "A card to display the floors of a house"
+});
 @customElement(cardName)
 export default class FloorsCard extends LitElement {
   private _hass?: HomeAssistant;
@@ -29,18 +37,25 @@ export default class FloorsCard extends LitElement {
   @state() private _areas: Record<string, AreaRegistryEntry> = {};
   private _entityCards = new Map<string, Promise<TemplateResult>>();
   private _entitiesContainerCard = new Map<string, Promise<TemplateResult>>();
-  private config: FloorCardConfig;
+  private config: FloorsCardConfig;
 
   static styles = styles;
 
-  constructor() {
-    super();
-    this.config = defaultConfig;
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("./editor");
+    return document.createElement(
+      `${cardName}-editor`
+    ) as LovelaceCardEditor;
   }
 
-  setConfig(config: Partial<FloorCardConfig>): void {
+  constructor() {
+    super();
+    this.config = fallbackConfig;
+  }
+
+  public setConfig(config: Partial<FloorsCardConfig>): void {
     configValidator(config);
-    this.config = { ...defaultConfig, ...config };
+    this.config = { ...fallbackConfig, ...config };
   }
 
   set hass(hass: HomeAssistant) {
@@ -104,7 +119,7 @@ export default class FloorsCard extends LitElement {
     if (!this._hass) return html`<ha-card>Loading...</ha-card>`;
     
     return html`
-      <ha-card .header=${this.config.header || nothing}>
+      <ha-card .header=${this.config.heading || nothing}>
         <div style="gap: ${this.config.floor_gap}px" class="card-content">${this._renderFloors()}</div>
       </ha-card>
     `;
@@ -118,7 +133,7 @@ export default class FloorsCard extends LitElement {
 
       return html`
         <div style="gap: ${this.config.floor_gap}px" class="floor">
-          ${this._renderFloorHeader(floor)} ${renderedAreas}
+          ${this._renderFloorHeading(floor)} ${renderedAreas}
         </div>
       `;
     });
@@ -138,13 +153,13 @@ export default class FloorsCard extends LitElement {
     return floors;
   }
 
-  private _renderFloorHeader(floor: FloorRegistryEntry): TemplateResult {
+  private _renderFloorHeading(floor: FloorRegistryEntry): TemplateResult {
     const floorIcon = this.config.show_floor_icons == 'always'
       ? floor.icon || `mdi:home-floor-${floor.floor_id}`
       : floor.icon
-    const headerClass = this.config.floor_icons_position == 'right' ? 'icon-right' : 'icon-left'
+    const headingClass = this.config.floor_icons_position == 'right' ? 'icon-right' : 'icon-left'
     return html`
-      <h2 class="${headerClass}">
+      <h2 class="${headingClass}">
         ${this.config.show_floor_icons
           ? html`<ha-icon .icon=${floorIcon}></ha-icon>`
           : nothing}
@@ -171,7 +186,7 @@ export default class FloorsCard extends LitElement {
     const areaIconClass = this.config.entity_icon_placement == 'left' ? 'entity-icons-left' : 'entity-icons-right'
     return html`
       <div class="area ${areaIconClass}">
-        ${this._renderAreaHeader(area)} ${entitiesCardContainer}
+        ${this._renderAreaHeading(area)} ${entitiesCardContainer}
       </div>
     `;
   }
@@ -199,13 +214,13 @@ export default class FloorsCard extends LitElement {
   };
 
 
-  private _renderAreaHeader(area: AreaRegistryEntry): TemplateResult {
+  private _renderAreaHeading(area: AreaRegistryEntry): TemplateResult {
     const areaIcon = this.config.show_area_icons == 'always'
       ? area.icon || this.config.default_area_icon
       : area.icon
-    const headerClass = this.config.area_icons_position == 'right' ? 'icon-right' : 'icon-left'
+    const headingClass = this.config.area_icons_position == 'right' ? 'icon-right' : 'icon-left'
     return html`
-      <h3 class="${headerClass}">
+      <h3 class="${headingClass}">
         ${this.config.show_area_icons
           ? html`<ha-icon .icon=${areaIcon}></ha-icon>`
           : nothing}
@@ -397,7 +412,7 @@ export default class FloorsCard extends LitElement {
     return "grey";
   }
 
-  static getStubConfig = (): Partial<FloorCardConfig> => (stubConfig);
+  public static getStubConfig = (): Partial<FloorsCardConfig> => (stubConfig);
 
   getCardSize(): number {
     return 3;

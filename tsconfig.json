@@ -15,14 +15,11 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "./src",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "baseUrl": "./src",
-    "paths": {
-      "#hass-types": ["../hass-types"]
-    }
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "**/*.d.ts"],
   "exclude": ["node_modules"]
 }

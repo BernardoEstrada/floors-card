@@ -61,9 +61,9 @@ const plugins = [
 
 export default [
   {
-    input: "src/card.ts",
+    input: "src/index.ts",
     output: {
-      dir: "dist",
+      file: "dist/lovelace-floors-card.js",
       format: "es",
       inlineDynamicImports: true,
       sourcemap: true,
