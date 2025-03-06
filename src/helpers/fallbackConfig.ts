@@ -11,14 +11,14 @@ export const fallbackConfig: FloorsCardConfig = {
   off_color: "grey",
   area_icons_position: "left",
   entity_icon_placement: "right",
-  domain_sort_order: [
+  domain_sort: [
     "light",
     "switch",
     "binary_sensor",
     "sensor",
     "climate",
   ],
-  class_sort_order: ["door", "window", "tamper", "occupancy"],
+  class_sort: ["door", "window", "tamper", "occupancy"],
   // include: {
   //   light: { states: ["on"] },
   //   input_boolean: { states: ["on"] },

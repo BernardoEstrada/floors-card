@@ -18,8 +18,12 @@
         "default_area_icon": "Default Icon",
         "area_gap": "Gap",
         "entity_icon_placement": "Entity Icon Placement",
-        "class_sort_order": "Sort Order by Class",
-        "domain_sort_order": "Sort Order by Domain",
+        "floor_sort_method": "Sort Floors by",
+        "floor_sort_order": "Sort Direction",
+        "area_sort_method": "Sort Areas by",
+        "area_sort_order": "Sort Direction",
+        "class_sort": "Sort Order by Class",
+        "domain_sort": "Sort Order by Domain",
         "include_domains": "Domains to Include",
         "include_classes": "Classes to Include",
         "include_states": "States to Include",
@@ -29,8 +33,13 @@
         "preferred_icons": "Preferred Icons",
         "entities_container_card": "Entities Container Card",
         "entity_card": "Entity Card",
-        "sorting": "Sorting",
-        "includes": "Filters",
+        "groups": {
+          "sorting": "Sorting",
+          "includes": "Filters",
+          "sorting_floors": "Floors",
+          "sorting_areas": "Areas",
+          "sorting_entities": "Entities"
+        },
         "icon_templates": {
           "home": "Home",
           "box": "Box",
@@ -54,6 +63,14 @@
         "icon_position": {
           "left": "Left",
           "right": "Right"
+        },
+        "sorting": {
+          "level": "Level",
+          "name": "Name",
+          "id": "ID",
+          "entities": "Entity Count",
+          "asc": "Ascending",
+          "desc": "Descending"
         }
       }
     }

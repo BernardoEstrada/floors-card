@@ -44,6 +44,21 @@ const multiCustomSelectorSelect = {
   },
 }
 
+const floorSortMethodSelector: SelectSelector = { select: { reorder:true, multiple: true, options: [
+  { value: 'level', label: localize('editor.card.floors.sorting.level') },
+  { value: 'name', label: localize('editor.card.floors.sorting.name') },
+  { value: 'id', label: localize('editor.card.floors.sorting.id') },
+]}}
+
+const areaSortMethodSelector: SelectSelector = { select: { reorder:true, multiple: true, options: [
+  { value: 'name', label: localize('editor.card.floors.sorting.name') },
+  { value: 'entities', label: localize('editor.card.floors.sorting.entities') },
+]}}
+
+const sortOrderSelector: SelectSelector = { select: { options: [
+  { value: 'asc', label: localize('editor.card.floors.sorting.asc') },
+  { value: 'desc', label: localize('editor.card.floors.sorting.desc') },
+]}}
 const domainSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleDomains } }
 const classSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleClasses } }
 const stateSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleStates } }
@@ -83,20 +98,25 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
       { name: 'entity_icon_placement', selector: iconPositionSchema},
       { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
     ]},
-    { type: 'grid', name: 'sorting', flatten: true, schema: [
-      { type: 'expandable', name: 'sorting', flatten: true, schema: [
-        { name: 'domain_sort_order', selector: domainSelectorCustom },
-        { name: 'class_sort_order', selector: classSelectorCustom },
-      ]},
-      { type: 'expandable', name: 'includes', flatten: true, schema: [
-        { name: 'include_domains', selector: domainSelectorCustom},
-        { name: 'include_classes', selector: classSelectorCustom},
-        { name: 'include_states', selector: stateSelectorCustom},
-        { type: 'grid', name: 'include_bools', flatten: true, schema: [
-          { name: 'include_all', type: 'boolean' },
-          { name: 'include_hidden', type: 'boolean' },
-      ]},
-      ]},
+    { type: 'expandable', name: 'groups.sorting', flatten: true, schema: [
+      { type: 'constant', name: 'groups.sorting_floors' },
+      { name: 'floor_sort_method', selector: floorSortMethodSelector },
+      { name: 'floor_sort_order', selector: sortOrderSelector },
+      { type: 'constant', name: 'groups.sorting_areas' },
+      { name: 'area_sort_method', selector: areaSortMethodSelector },
+      { name: 'area_sort_order', selector: sortOrderSelector },
+      { type: 'constant', name: 'groups.sorting_entities' },
+      { name: 'domain_sort', selector: domainSelectorCustom },
+      { name: 'class_sort', selector: classSelectorCustom },
+    ]},
+    { type: 'expandable', name: 'groups.includes', flatten: true, schema: [
+      { name: 'include_domains', selector: domainSelectorCustom},
+      { name: 'include_classes', selector: classSelectorCustom},
+      { name: 'include_states', selector: stateSelectorCustom},
+      { type: 'grid', name: 'include_bools', flatten: true, schema: [
+        { name: 'include_all', type: 'boolean' },
+        { name: 'include_hidden', type: 'boolean' },
+    ]},
     ]},
     // { name: 'include', type: 'any' },
     // { name: 'preferred_icons', type: 'object' },
@@ -137,8 +157,12 @@ const floorsCardConfigStruct = assign(
     default_area_icon: optional(string()),
     area_icons_position: alignment,
     entity_icon_placement: alignment,
-    class_sort_order: optional(array(string())),
-    domain_sort_order: optional(array(string())),
+    floor_sort_method: optional(array(union([literal('level'), literal('name'), literal('id')]))),
+    floor_sort_order: optional(union([literal('asc'), literal('desc')])),
+    area_sort_method: optional(array(union([literal('name'), literal('entities')]))),
+    area_sort_order: optional(union([literal('asc'), literal('desc')])),
+    class_sort: optional(array(string())),
+    domain_sort: optional(array(string())),
     include_domains: optional(array(string())),
     include_classes: optional(array(string())),
     include_states: optional(array(string())),
