@@ -14,4 +14,8 @@ export const stubConfig: Partial<FloorsCardConfig> = {
   include_states: ["on"],
   include_domains: ["light", "input_boolean", "binary_sensor"],
   include_classes: ["door", "window", "occupancy", "tamper", "no_class"],
+  floor_sort_method: ["level", "name"],
+  floor_sort_order: "asc",
+  area_sort_method: ["name"],
+  area_sort_order: "asc",
 };

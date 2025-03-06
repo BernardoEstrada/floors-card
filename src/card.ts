@@ -128,9 +128,26 @@ export default class FloorsCard extends LitElement {
     `;
   }
 
+  private _compareFloors(compare_methods: ('level' | 'name' | 'id')[], order_method: 'asc' | 'desc', a: FloorRegistryEntry, b: FloorRegistryEntry): number {
+    const methods = {
+      level: (a.level || 0) - (b.level || 0),
+      name: a.name.localeCompare(b.name),
+      id: a.floor_id.localeCompare(b.floor_id),
+    };
+
+    const result = compare_methods
+      .map((method) => methods[method])
+      .reduce((acc, val) => acc || val, 0);
+    return order_method === 'desc' ? -result : result;
+  }
+
   private _renderFloors(): (TemplateResult | typeof nothing)[] {
-    const floors = this._groupAreasByFloor();
-    return Object.values(floors).map((floor) => {
+    let floors = Object.values(this._groupAreasByFloor())
+    if (this.config.floor_sort_method) floors = floors.sort((a, b) => {
+      return this._compareFloors(this.config.floor_sort_method!, this.config.floor_sort_order || 'asc', a, b);
+    });
+    
+    return floors.map((floor) => {
       const renderedAreas = floor.areas.map((area) => this._renderArea(area));
       if (renderedAreas.every((area) => area === nothing)) return nothing;
 
@@ -153,6 +170,25 @@ export default class FloorsCard extends LitElement {
       };
       floors[floorId].areas.push(area);
     });
+
+    if (this.config.area_sort_method) {
+      Object.values(floors).forEach((floor) => {
+        floor.areas = floor.areas.sort((a, b) => {
+          const methods = {
+            name: a.name.localeCompare(b.name),
+            entities: this.config.area_sort_method?.includes('entities')
+              ? this._getAreaEntities(a).length - this._getAreaEntities(b).length
+              : 0,
+          };
+
+          const result = this.config.area_sort_method!
+            .map((method) => methods[method])
+            .reduce((acc, val) => acc || val, 0);
+          return this.config.area_sort_order === 'desc' ? -result : result;
+        });
+      });
+    }
+
     return floors;
   }
 
@@ -225,8 +261,8 @@ export default class FloorsCard extends LitElement {
     const aDomain = a.entity_id.split(".")[0];
     const bDomain = b.entity_id.split(".")[0];
     const domainCompare = 
-        this.config.domain_sort_order.indexOf(aDomain) - 
-        this.config.domain_sort_order.indexOf(bDomain);
+        this.config.domain_sort.indexOf(aDomain) - 
+        this.config.domain_sort.indexOf(bDomain);
     return domainCompare !== 0 ? domainCompare : a.entity_id.localeCompare(b.entity_id);
   };
 

@@ -15,8 +15,12 @@ export interface FloorsCardConfig implements LovelaceCardConfig {
   area_gap: number;
   entity_icon_placement: 'left' | 'right';
   off_color: string;
-  domain_sort_order: string[];
-  class_sort_order: string[];
+  floor_sort_method?: ('level' | 'name' | 'id')[];
+  floor_sort_order?: 'asc' | 'desc';
+  area_sort_method?: ('name' | 'entities')[];
+  area_sort_order?: 'asc' | 'desc';
+  domain_sort: string[];
+  class_sort: string[];
   include_domains?: Domain[];
   include_classes?: string[];
   include_states?: string[];

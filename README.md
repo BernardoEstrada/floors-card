@@ -47,8 +47,12 @@ The card can be configured using the Lovelace UI or by editing the `floors-card.
 | `area_gap`                | number                                       | 8                                                         | The gap between areas in px.                                                                       |
 | `entity_icon_placement`   | 'left' or 'right'                            | "right"                                                   | The position of the entity icons.                                                                  |
 | `off_color`               | Color                                        | "grey"                                                    | The color to use for entities that are off.                                                        |
-| `domain_sort_order`       | Domain[]                                     | ["light", "switch", "binary_sensor", "sensor", "climate"] | The order to sort domains by.                                                                      |
-| `class_sort_order`        | Class[]                                      | ["door", "window", "tamper", "occupancy"]                 | The order to sort classes by.                                                                      |
+| `floor_sort_method`       | ('level'\|'name'\|'id)[]                     | None                                                      | The order to sort floors by.                                                                       |
+| `floor_sort_order`        | 'asc' or 'desc'                              | "asc"                                                     | The order to sort floors in.                                                                       |
+| `area_sort_method`        | ('name'\|'entities')[]                       | None                                                      | The order to sort areas by.                                                                        |
+| `area_sort_order`         | 'asc' or 'desc'                              | "asc"                                                     | The order to sort areas in.                                                                        |
+| `domain_sort`             | Domain[]                                     | ["light", "switch", "binary_sensor", "sensor", "climate"] | The order to sort domains by.                                                                      |
+| `class_sort`              | Class[]                                      | ["door", "window", "tamper", "occupancy"]                 | The order to sort classes by.                                                                      |
 | `include_domains`         | Domain[]                                     | None                                                      | The domains to include.                                                                            |
 | `include_classes`         | Class[]                                      | None                                                      | The classes to include.                                                                            |
 | `include_states`          | State[]                                      | None                                                      | The states to include.                                                                             |
@@ -95,12 +99,12 @@ If written as a hex value, it should be in the format `#RRGGBB`, remember to inc
 
 ##### Domain
 
-`domain_sort_order`, `include_domains` and keys in `include` and `preferred_icons` can be set to any domain valid in HomeAssistant.
+`domain_sort`, `include_domains` and keys in `include` and `preferred_icons` can be set to any domain valid in HomeAssistant.
 Examples include `light`, `switch`, `binary_sensor`, `input_boolean`.
 
 ##### Class
 
-`class_sort_order`, `include_classes` and keys in `include` and `preferred_icons` can be set to any class valid in HomeAssistant.
+`class_sort`, `include_classes` and keys in `include` and `preferred_icons` can be set to any class valid in HomeAssistant.
 An special class called `no_class` can be used to include entities with no class, like lights.
 Examples include `door`, `window`, `tamper`, `occupancy`.
 

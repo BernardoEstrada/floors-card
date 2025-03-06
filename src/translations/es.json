@@ -18,8 +18,12 @@
         "default_area_icon": "Icono por Defecto",
         "area_gap": "Espacio",
         "entity_icon_placement": "Posición de Iconos de Entidades",
-        "class_sort_order": "Ordenar por Clase",
-        "domain_sort_order": "Ordenar por Dominio",
+        "floor_sort_method": "Ordenar Pisos por",
+        "floor_sort_order": "Dirección de Orden",
+        "area_sort_method": "Ordenar Áreas por",
+        "area_sort_order": "Dirección de Orden",
+        "class_sort": "Ordenar por Clase",
+        "domain_sort": "Ordenar por Dominio",
         "include_domains": "Dominios a Incluir",
         "include_classes": "Clases a Incluir",
         "include_states": "Estados a Incluir",
@@ -29,8 +33,13 @@
         "preferred_icons": "Iconos Preferidos",
         "entities_container_card": "Tarjeta Contenedor de Entidades",
         "entity_card": "Tarjeta de Entidad",
-        "sorting": "Ordenar",
-        "includes": "Filtros",
+        "groups": {
+          "sorting": "Ordenar",
+          "includes": "Filtros",
+          "sorting_floors": "Pisos",
+          "sorting_areas": "Áreas",
+          "sorting_entities": "Entidades"
+        },
         "icon_templates": {
           "home": "Casa",
           "box": "Caja",
@@ -54,6 +63,14 @@
         "icon_position": {
           "left": "Izquierda",
           "right": "Derecha"
+        },
+        "sorting": {
+          "level": "Nivel",
+          "name": "Nombre",
+          "id": "ID",
+          "entities": "Numero de Entidades",
+          "asc": "Ascendente",
+          "desc": "Descendente"
         }
       }
     }
