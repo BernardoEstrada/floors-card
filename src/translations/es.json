@@ -9,6 +9,8 @@
         "floor_config": "Configuración de Piso",
         "show_floor_icons": "Mostrar Iconos",
         "floor_icons_position": "Posición de los Iconos",
+        "fallback_floor_icon_template": "Iconos de Piso",
+        "floor_icons_prefer_alpha": "Preferir Iconos de Caracteres",
         "floor_gap": "Espacio",
         "area_config": "Configuración de Área",
         "show_area_icons": "Mostrar Iconos",
@@ -28,7 +30,31 @@
         "entities_container_card": "Tarjeta Contenedor de Entidades",
         "entity_card": "Tarjeta de Entidad",
         "sorting": "Ordenar",
-        "includes": "Filtros"
+        "includes": "Filtros",
+        "icon_templates": {
+          "home": "Casa",
+          "box": "Caja",
+          "boxOutline": "Caja Contorno",
+          "circle": "Círculo",
+          "circleOutline": "Círculo Contorno",
+          "literal": "Caracteres",
+          "roman": "Romanos",
+          "dice": "Dado",
+          "diceOutline": "Dado Contorno",
+          "tally": "Contador",
+          "circleSlice": "Sectores Círculo",
+          "hexagonSlice": "Sectores Hexágono"
+        },
+        "icon_visibility": {
+          "false": "Oculto",
+          "if_available": "Si Existe",
+          "always": "Siempre",
+          "override": "Sobreescribir"
+        },
+        "icon_position": {
+          "left": "Izquierda",
+          "right": "Derecha"
+        }
       }
     }
   },

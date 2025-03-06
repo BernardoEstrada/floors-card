@@ -35,29 +35,58 @@ The card can be configured using the Lovelace UI or by editing the `floors-card.
 
 | Name                      | Type                                         | Default                                                   | Description                                                                                        |
 |---------------------------|----------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| `header`                  | string                                       | None                                                      | The header to display above the card.                                                              |
-| `off_color`               | Color                                        | "grey"                                                    | The color to use for entities that are off.                                                        |
-| `show_floor_icons`        | boolean                                      | true                                                      | Whether to show floor icons.                                                                       |
+| `heading`                 | string                                       | None                                                      | The heading to display above the card.                                                             |
+| `show_floor_icons`        | false\|'if_available'\|\'always'\|'override' | 'if_available'                                            | Whether to show floor icons.                                                                       |
+| `fallback_floor_icon_template` | FloorIconTemplate                       | "home"                                                    | The icon to use for floors that do not have an icon.                                               |
+| `floor_icons_prefer_alpha`| boolean                                      | None                                                      | Whether to prefer icons with a alphabetical characters (over numerical) when available             |
 | `floor_icons_position`    | 'left' or 'right'                            | "left"                                                    | The position of the floor icons.                                                                   |
 | `floor_gap`               | number                                       | 8                                                         | The gap between floors in px.                                                                      |
-| `show_area_icons`         | boolean                                      | true                                                      | Whether to show area icons.                                                                        |
+| `show_area_icons`         | false\|'if_available'\|\'always'\|'override' | 'if_available'                                            | Whether to show area icons.                                                                        |
+| `default_area_icon`       | string                                       | "mdi:texture-box"                                         | The default icon to use for areas.                                                                 |
 | `area_icons_position`     | 'left' or 'right'                            | "left"                                                    | The position of the area icons.                                                                    |
-| `area_gap`                | number                                       | 8                                                         | The gap between areas in px.
-| `default_area_icon`       | string                                       | "mdi:texture-box"                                       | The default icon to use for areas.                                                                 |
+| `area_gap`                | number                                       | 8                                                         | The gap between areas in px.                                                                       |
 | `entity_icon_placement`   | 'left' or 'right'                            | "right"                                                   | The position of the entity icons.                                                                  |
+| `off_color`               | Color                                        | "grey"                                                    | The color to use for entities that are off.                                                        |
 | `domain_sort_order`       | Domain[]                                     | ["light", "switch", "binary_sensor", "sensor", "climate"] | The order to sort domains by.                                                                      |
 | `class_sort_order`        | Class[]                                      | ["door", "window", "tamper", "occupancy"]                 | The order to sort classes by.                                                                      |
 | `include_domains`         | Domain[]                                     | None                                                      | The domains to include.                                                                            |
 | `include_classes`         | Class[]                                      | None                                                      | The classes to include.                                                                            |
 | `include_states`          | State[]                                      | None                                                      | The states to include.                                                                             |
-| `include`                 | DomainIncludes                               | None                                                      | The domains to include. This will override the `include_domains` and `include_classes` parameters. |
 | `include_all`             | boolean                                      | false                                                     | Whether to include all domains and classes.                                                        |
 | `include_hidden`          | boolean                                      | false                                                     | Whether to include hidden entities.                                                                |
+| `include`                 | DomainIncludes                               | None                                                      | The domains to include. This will override the `include_domains` and `include_classes` parameters. |
 | `preferred_icons`         | Record<Domain \| Class, Icon>                | {}                                                        | The preferred icons to use for entities with the same domain or class.                             |
+| `preferred_colors`        | Record<Domain \| Class, Color>               | {}                                                        | The preferred colors to use for entities with the same domain or class.                            |
 | `entities_container_card` | LovelaceCardConfig & { cards_param: string } | None                                                      | The card to use for the entities container.                                                        |
 | `entity_card`             | LovelaceCardConfig                           | None                                                      | The card to use for each entity.                                                                   |
 
 #### Notes
+
+##### Floor and Area Icons
+
+When `show_floor_icons` or `show_area_icons` is set to `'if_available'`, the card will attempt to use the `icon` attribute of the floor or area entity.
+If set to `'always'` and the entity does not have an icon, the card will use the `fallback_floor_icon_template` or `default_area_icon` parameter, respectively.
+When `show_floor_icons` or `show_area_icons` is set to `'override'`, the card will always use the `fallback_floor_icon_template` or `default_area_icon` parameter, respectively.
+
+The `default_area_icon` parameter can be set to any valid icon name in HomeAssistant.
+
+The `fallback_floor_icon_template` parameter can be set to any of the following values:
+
+- "home"
+- "box"
+- "boxOutline"
+- "circle"
+- "circleOutline"
+- "literal"
+- "roman"
+- "dice"
+- "diceOutline"
+- "tally"
+- "circleSlice"
+- "hexagonSlice"
+
+The card will try to find the best icon to use based on the floor number and name.
+When `floor_icons_prefer_alpha` is set to true, the card will prefer icons with alphabetical characters over numerical characters when available.
 
 ##### Color
 
@@ -80,10 +109,32 @@ Examples include `door`, `window`, `tamper`, `occupancy`.
 `include_states` can be set to any state valid in HomeAssistant.
 Examples include `on`, `open`, `playing`, `buffering`.
 
-##### Icon
+##### Preferred Icons and Colors
 
-`preferred_icons` values can be set to any icon valid in HomeAssistant.
-Examples include `mdi:door`, `mdi:window`, `mdi:alarm-light-outline`.
+`preferred_icons` and `preferred_colors` can be set to an object with keys that are entities, domains, classes or simply a substring of the entity name.
+The values should be the icon or color, respectively, to use when there is a match.
+Example:
+
+```yaml
+preferred_icons:
+  light.living_room: # Entity
+    icon: "mdi:sofa"
+  light: # Domain
+    icon: "mdi:lightbulb"
+  door: # Class
+    icon: "mdi:door"
+  outdoor: # Substring of entity name
+    icon: "mdi:tree"
+preferred_colors:
+  light.living_room: # Entity
+    color: "red"
+  light: # Domain
+    color: "blue"
+  door: # Class
+    color: "green"
+  roof: # Substring of entity name
+    color: "yellow"
+```
 
 ##### DomainIncludes
 

@@ -1,11 +1,12 @@
 import type { FloorsCardConfig } from "types";
 
 export const fallbackConfig: FloorsCardConfig = {
-  show_floor_icons: true,
+  show_floor_icons: 'if_available',
+  fallback_floor_icon_template: "home",
   floor_gap: 8,
   area_gap: 8,
   floor_icons_position: "left",
-  show_area_icons: true,
+  show_area_icons: 'if_available',
   default_area_icon: "mdi:texture-box",
   off_color: "grey",
   area_icons_position: "left",
@@ -26,4 +27,5 @@ export const fallbackConfig: FloorsCardConfig = {
   include_all: false,
   include_hidden: false,
   preferred_icons: {},
+  preferred_colors: {},
 };

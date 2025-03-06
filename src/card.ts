@@ -20,6 +20,9 @@ import {
   fallbackConfig,
   cardName,
   registerCard,
+  defaultIcons,
+  defaultColors,
+  getFloorIconFromTemplate,
 } from "./helpers";
 import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
 
@@ -154,13 +157,27 @@ export default class FloorsCard extends LitElement {
   }
 
   private _renderFloorHeading(floor: FloorRegistryEntry): TemplateResult {
-    const floorIcon = this.config.show_floor_icons == 'always'
-      ? floor.icon || `mdi:home-floor-${floor.floor_id}`
-      : floor.icon
+    let floorIcon;
+    switch (this.config.show_floor_icons) {
+      case 'always':
+        floorIcon = floor.icon || getFloorIconFromTemplate(this.config.fallback_floor_icon_template, floor, this.config.floor_icons_prefer_alpha)
+        break;
+      case 'override':
+        floorIcon = getFloorIconFromTemplate(this.config.fallback_floor_icon_template, floor, this.config.floor_icons_prefer_alpha)
+        break;
+      case 'if_available':
+        floorIcon = floor.icon;
+        break;
+      case false:
+        floorIcon = undefined;
+        break;
+    }
+
     const headingClass = this.config.floor_icons_position == 'right' ? 'icon-right' : 'icon-left'
+
     return html`
       <h2 class="${headingClass}">
-        ${this.config.show_floor_icons
+        ${floorIcon
           ? html`<ha-icon .icon=${floorIcon}></ha-icon>`
           : nothing}
         ${floor.name}
@@ -215,13 +232,26 @@ export default class FloorsCard extends LitElement {
 
 
   private _renderAreaHeading(area: AreaRegistryEntry): TemplateResult {
-    const areaIcon = this.config.show_area_icons == 'always'
-      ? area.icon || this.config.default_area_icon
-      : area.icon
+    let areaIcon;
+    switch (this.config.show_area_icons) {
+      case 'always':
+        areaIcon = area.icon || this.config.default_area_icon;
+        break;
+      case 'override':
+        areaIcon = this.config.default_area_icon;
+        break;
+      case 'if_available':
+        areaIcon = area.icon;
+        break;
+      case false:
+        areaIcon = undefined;
+        break;
+    }
+
     const headingClass = this.config.area_icons_position == 'right' ? 'icon-right' : 'icon-left'
     return html`
       <h3 class="${headingClass}">
-        ${this.config.show_area_icons
+        ${areaIcon
           ? html`<ha-icon .icon=${areaIcon}></ha-icon>`
           : nothing}
         ${area.name}
@@ -343,11 +373,19 @@ export default class FloorsCard extends LitElement {
     
     if (!this._iconCache.has(cacheKey)) {
         const [domain] = entity_id.split(".");
-        const deviceClass = entity.attributes.device_class;
+        const deviceClass = entity.attributes.device_class || 'no_class';
+
+        const preferredIconFor = {
+          entity: this.config.preferred_icons[entity_id],
+          substring: Object.entries(this.config.preferred_icons).find(([key]) => entity_id.includes(key))?.[1],
+          class: this.config.preferred_icons[deviceClass],
+          domain: this.config.preferred_icons[domain],
+        }
         const icon = (
-          this.config.preferred_icons[entity_id] ||
-          this.config.preferred_icons[deviceClass!] ||
-          entity.attributes.icon ||
+          preferredIconFor.entity ||
+          preferredIconFor.substring ||
+          preferredIconFor.class ||
+          preferredIconFor.domain ||
           this._defaultIcon(domain, deviceClass)
         );
         this._iconCache.set(cacheKey, icon);
@@ -356,20 +394,14 @@ export default class FloorsCard extends LitElement {
   }
 
   private _defaultIcon(domain: string, deviceClass?: string): string {
-    if (domain === "light") return "mdi:lightbulb";
-    if (domain === "binary_sensor") {
-      switch (deviceClass) {
-        case "door":
-          return "mdi:door-sliding-open";
-        case "window":
-          return "mdi:window-closed";
-        case "occupancy":
-          return "mdi:motion-sensor";
-        case "tamper":
-          return "m3rf:policy-alert";
-      }
-    }
-    return "mdi:alert-circle-outline";
+    const iconForDomain = defaultIcons[domain];
+    if (typeof iconForDomain === 'string') return iconForDomain;
+
+    const iconForClass = iconForDomain[deviceClass];
+    if (iconForClass) return iconForClass;
+
+    return defaultIcons.fallback;
+
   }
   
   private _getEntityColor(entity_id: string): string {
@@ -387,29 +419,42 @@ export default class FloorsCard extends LitElement {
     if (entity.state === "off" && this.config.off_color)
       return this.config.off_color;
 
-    if (entity.entity_id.includes("light.")) {
+    const entityClass = entity.attributes.device_class || 'no_class';
+    const entityDomain = entity.entity_id.split(".")[0];
+
+    const preferredColorFor = {
+      entity: this.config.preferred_colors[entity.entity_id],
+      substring: Object.entries(this.config.preferred_colors).find(([key]) => entity.entity_id.includes(key))?.[1],
+      class: this.config.preferred_colors[entityClass],
+      domain: this.config.preferred_colors[entityDomain],
+    }
+
+    const preferredColor = (
+      preferredColorFor.entity ||
+      preferredColorFor.substring ||
+      preferredColorFor.class ||
+      preferredColorFor.domain
+    );
+
+    if (entityDomain === 'light') {
       if (entity.attributes.rgb_color) {
         const rgb = entity.attributes.rgb_color;
         return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2])
           .toString(16)
           .slice(1)}`;
       }
-      return "orange";
+      return preferredColor || defaultColors.light;
     }
 
-    if (entity.entity_id.includes("binary_sensor.")) {
-      switch (entity.attributes.device_class) {
-        case "door":
-          return "green";
-        case "window":
-          return "green";
-        case "occupancy":
-          return "blue";
-        case "tamper":
-          return "red";
-      }
-    }
-    return "grey";
+    if (preferredColor) return preferredColor;
+
+    const colorForDomain = defaultColors[entityDomain];
+    if (typeof colorForDomain === 'string') return colorForDomain;
+
+    const colorForClass = colorForDomain[entityClass];
+    if (colorForClass) return colorForClass;
+
+    return defaultColors.fallback;
   }
 
   public static getStubConfig = (): Partial<FloorsCardConfig> => (stubConfig);
