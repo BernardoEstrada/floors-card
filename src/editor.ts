@@ -1,25 +1,28 @@
-import { cardName, exampleDomains, exampleClasses, exampleStates } from "./helpers";
+import { cardName, exampleDomains, exampleClasses, exampleStates, availableFloorIconTemplates } from "./helpers";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { HaFormSchema, HaFormSelectSchema } from "./hass-types/src/components/ha-form/types";
+import { HaFormBaseSchema, HaFormSchema, HaFormSelectSchema } from "./hass-types/src/components/ha-form/types";
 import { any, array, assert, assign, boolean, literal, number, object, optional, string, union } from "superstruct";
 import { HomeAssistant, LovelaceCardConfig } from "./hass-types";
 import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
 import { SelectSelector } from "./hass-types/src/data/selector";
 import setupCustomlocalize from "localize";
+import { FloorsCardConfig } from "types";
 
 
 interface HaFormSelectSchemaAny extends HaFormSelectSchema {
   options: readonly (readonly [any, string])[];
 }
+const localize = setupCustomlocalize();
 
 const iconVisibilitySchema: SelectSelector = {
   select: {
     mode: 'dropdown',
     options: [
-      { value: 'always', label: 'Always' },
-      { value: false, label: 'False' },
-      { value: true, label: 'True' }
+      { value: false, label: localize('editor.card.floors.icon_visibility.false') },
+      { value: 'if_available', label: localize('editor.card.floors.icon_visibility.if_available') },
+      { value: 'always', label: localize('editor.card.floors.icon_visibility.always') },
+      { value: 'override', label: localize('editor.card.floors.icon_visibility.override') },
     ]
   }
 };
@@ -27,8 +30,8 @@ const iconPositionSchema: SelectSelector = {
   select: {
     mode: 'dropdown',
     options: [
-      { value: 'left', label: 'Left' },
-      { value: 'right', label: 'Right' }
+      { value: 'left', label: localize('editor.card.floors.icon_position.left') },
+      { value: 'right', label: localize('editor.card.floors.icon_position.right') },
     ]
   }
 };
@@ -44,47 +47,64 @@ const multiCustomSelectorSelect = {
 const domainSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleDomains } }
 const classSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleClasses } }
 const stateSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleStates } }
+const fallbackIconSelector: SelectSelector = { select: { options: availableFloorIconTemplates.map((icon) => ({ value: icon, label: localize(`editor.card.floors.icon_templates.${icon}`) })) } }
 
 
-const SCHEMA: (HaFormSchema | HaFormSelectSchemaAny)[] = [
-  { name: 'heading', type: 'string' },
-  { type: 'grid', name: 'sections', flatten: true, schema: [
-    { type: 'expandable', name: 'floor_config', flatten: true, schema: [
-      { name: 'show_floor_icons', selector: iconVisibilitySchema},
-      { name: 'floor_icons_position', selector: iconPositionSchema},
-      { name: 'floor_gap', type: 'integer' },
-    ]},
-    { type: 'expandable', name: 'area_config', flatten: true, schema: [
-      { name: 'show_area_icons', selector: iconVisibilitySchema},
-      { name: 'area_icons_position', selector: iconPositionSchema},
-      { name: 'area_gap', type: 'integer' },
-      { name: 'default_area_icon', selector: { icon: { placeholder: 'mdi:texture-box' } } },
-    ]},
-  ]},
-  { type: 'grid', name: 'entity_config', flatten: true, schema: [
-    { name: 'entity_icon_placement', selector: iconPositionSchema},
-    { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
-  ]},
-  { type: 'grid', name: 'sorting', flatten: true, schema: [
-    { type: 'expandable', name: 'sorting', flatten: true, schema: [
-      { name: 'domain_sort_order', selector: domainSelectorCustom },
-      { name: 'class_sort_order', selector: classSelectorCustom },
-    ]},
-    { type: 'expandable', name: 'includes', flatten: true, schema: [
-      { name: 'include_domains', selector: domainSelectorCustom},
-      { name: 'include_classes', selector: classSelectorCustom},
-      { name: 'include_states', selector: stateSelectorCustom},
-      { type: 'grid', name: 'include_bools', flatten: true, schema: [
-        { name: 'include_all', type: 'boolean' },
-        { name: 'include_hidden', type: 'boolean' },
-    ]},
-    ]},
-  ]},
-  // { name: 'include', type: 'any' },
-  // { name: 'preferred_icons', type: 'object' },
-  // { name: 'entities_container_card', type: 'object' },
-  // { name: 'entity_card', type: 'object' }
+const floorIconTemplatesSchema: HaFormSchema[] = [
+  { name: 'fallback_floor_icon_template', selector: fallbackIconSelector },
+  { name: 'floor_icons_prefer_alpha', type: 'boolean' },
 ];
+const floorIconEnabledSchema: HaFormSchema[] = [{ name: 'floor_icons_position', selector: iconPositionSchema}];
+
+const areaIconEnabledPosition: HaFormSchema[] = [
+  { name: 'area_icons_position', selector: iconPositionSchema},
+  { name: 'default_area_icon', selector: { icon: { placeholder: 'mdi:texture-box' } } },
+];
+
+const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchemaAny)[] => {
+  const floorIconSettingsSchema: HaFormSchema[] = [
+    { name: 'show_floor_icons', selector: iconVisibilitySchema},
+    ...['always', 'override'].includes(config.show_floor_icons as string) ? floorIconTemplatesSchema : [],
+    ...config.show_floor_icons ? floorIconEnabledSchema : [],
+    { name: 'floor_gap', type: 'integer' },
+  ];
+
+  const areaIconSettingsSchema: HaFormSchema[] = [
+    { name: 'show_area_icons', selector: iconVisibilitySchema},
+    ...config.show_area_icons ? areaIconEnabledPosition : [],
+    { name: 'area_gap', type: 'integer' },
+  ];
+
+  return [
+    { name: 'heading', type: 'string' },
+    { type: 'expandable', name: 'floor_config', flatten: true, schema: floorIconSettingsSchema},
+    { type: 'expandable', name: 'area_config', flatten: true, schema: areaIconSettingsSchema},
+    { type: 'grid', name: 'entity_config', flatten: true, schema: [
+      { name: 'entity_icon_placement', selector: iconPositionSchema},
+      { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
+    ]},
+    { type: 'grid', name: 'sorting', flatten: true, schema: [
+      { type: 'expandable', name: 'sorting', flatten: true, schema: [
+        { name: 'domain_sort_order', selector: domainSelectorCustom },
+        { name: 'class_sort_order', selector: classSelectorCustom },
+      ]},
+      { type: 'expandable', name: 'includes', flatten: true, schema: [
+        { name: 'include_domains', selector: domainSelectorCustom},
+        { name: 'include_classes', selector: classSelectorCustom},
+        { name: 'include_states', selector: stateSelectorCustom},
+        { type: 'grid', name: 'include_bools', flatten: true, schema: [
+          { name: 'include_all', type: 'boolean' },
+          { name: 'include_hidden', type: 'boolean' },
+      ]},
+      ]},
+    ]},
+    // { name: 'include', type: 'any' },
+    // { name: 'preferred_icons', type: 'object' },
+    // { name: 'preferred_colors', type: 'object' },
+    // { name: 'entities_container_card', type: 'object' },
+    // { name: 'entity_card', type: 'object' }
+  ];
+}
 
 const lovelaceCardConfigStruct = object({
   index: optional(number()),
@@ -98,8 +118,9 @@ const lovelaceCardConfigStruct = object({
 
 
 
-const iconVisibility = optional(union([literal('always'), boolean()]));
+const iconVisibility = optional(union([literal('always'), literal('if_available'), literal('override'), literal(false)]));
 const alignment = optional(union([literal('left'), literal('right')]));
+const fallbackIconStruct = optional(union([literal(undefined), ...availableFloorIconTemplates.map(literal)]));
 
 const floorsCardConfigStruct = assign(
   lovelaceCardConfigStruct,
@@ -107,6 +128,8 @@ const floorsCardConfigStruct = assign(
     heading: optional(string()),
     off_color: optional(string()),
     show_floor_icons: iconVisibility,
+    fallback_floor_icon_template: fallbackIconStruct,
+    floor_icons_prefer_alpha: optional(boolean()),
     floor_icons_position: alignment,
     floor_gap: optional(number()),
     area_gap: optional(number()),
@@ -123,6 +146,7 @@ const floorsCardConfigStruct = assign(
     include_all: optional(boolean()),
     include_hidden: optional(boolean()),
     preferred_icons: optional(object()),
+    preferred_colors: optional(object()),
     entities_container_card: optional(object()),
     entity_card: optional(object()),
   })
@@ -150,13 +174,9 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
   }
 
   public setConfig(config: LovelaceCardConfig): void {
-    const parsedConfig = config;
-    assert(parsedConfig, floorsCardConfigStruct);
+    assert(config, floorsCardConfigStruct);
     this._config = config;
   }
-
-  // Heading -> ui.panel.lovelace.editor.card.heading.heading
-  // Off Color -> 
 
   private _computeLabel = (schema: HaFormSchema) => {
     return this.localize(`editor.card.floors.${schema.name}`);
@@ -171,7 +191,7 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${genSchema(this._config as unknown as FloorsCardConfig)}
         .computeLabel=${this._computeLabel}
         @value-changed=${this._valueChanged}
       ></ha-form>

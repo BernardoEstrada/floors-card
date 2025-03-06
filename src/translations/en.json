@@ -9,6 +9,8 @@
         "floor_config": "Floor Configuration",
         "show_floor_icons": "Show Icons",
         "floor_icons_position": "Icons Position",
+        "fallback_floor_icon_template": "Floor Icons",
+        "floor_icons_prefer_alpha": "Prefer Character Icons",
         "floor_gap": "Gap",
         "area_config": "Area Configuration",
         "show_area_icons": "Show Icons",
@@ -28,7 +30,31 @@
         "entities_container_card": "Entities Container Card",
         "entity_card": "Entity Card",
         "sorting": "Sorting",
-        "includes": "Filters"
+        "includes": "Filters",
+        "icon_templates": {
+          "home": "Home",
+          "box": "Box",
+          "boxOutline": "Box Outline",
+          "circle": "Circle",
+          "circleOutline": "Circle Outline",
+          "literal": "Characters",
+          "roman": "Roman",
+          "dice": "Dice",
+          "diceOutline": "Dice Outline",
+          "tally": "Tally",
+          "circleSlice": "Circle Slice",
+          "hexagonSlice": "Hexagon Slice"
+        },
+        "icon_visibility": {
+          "false": "Hidden",
+          "if_available": "If Available",
+          "always": "Always",
+          "override": "Override"
+        },
+        "icon_position": {
+          "left": "Left",
+          "right": "Right"
+        }
       }
     }
   },
