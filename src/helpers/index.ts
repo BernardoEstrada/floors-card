@@ -4,3 +4,4 @@ export { fallbackConfig } from "./fallbackConfig";
 export * from "./constants";
 export { default as registerCard } from "./registerCard";
 export * from "./floorIcons";
+export { Color } from "./colors";
