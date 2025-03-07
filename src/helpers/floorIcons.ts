@@ -35,7 +35,6 @@ export const homeFloorIconTemplates: FloorIconTemplateI = {
     numeric_limit: 3,
     has_negative: true,
     alpha_available: ['a', 'b', 'g', 'l'],
-    // alpha_available: ['a', 'g', 'l'],
     default: 'mdi:home',
   }
 } as const;
@@ -45,21 +44,25 @@ export const alphaNumericFloorIconTemplates: FloorIconTemplateI = {
     numeric: 'mdi:numeric-[[floor]]-box',
     alpha: 'mdi:alpha-[[floor]]-box',
     numeric_limit: 10,
+    default: 'mdi:checkbox-blank',
   },
   boxOutline: {
     numeric: 'mdi:numeric-[[floor]]-box-outline',
     alpha: 'mdi:alpha-[[floor]]-box-outline',
     numeric_limit: 10,
+    default: 'mdi:checkbox-blank-outline',
   },
   circle: {
     numeric: 'mdi:numeric-[[floor]]-circle',
     alpha: 'mdi:alpha-[[floor]]-circle',
     numeric_limit: 10,
+    default: 'mdi:circle',
   },
   circleOutline: {
     numeric: 'mdi:numeric-[[floor]]-circle-outline',
     alpha: 'mdi:alpha-[[floor]]-circle-outline',
     numeric_limit: 10,
+    default: 'mdi:circle-outline',
   },
   literal: {
     numeric: 'mdi:numeric-[[floor]]',
@@ -77,10 +80,12 @@ export const numericFloorIconTemplates: FloorIconTemplateI = {
   dice: {
     numeric: 'mdi:dice-[[floor]]',
     numeric_limit: 6,
+    default: 'mdi:checkbox-blank',
   },
   diceOutline: {
     numeric: 'mdi:dice-[[floor]]-outline',
     numeric_limit: 6,
+    default: 'mdi:checkbox-blank-outline',
   },
   tally: {
     numeric: 'mdi:tally-mark-[[floor]]',
@@ -89,10 +94,12 @@ export const numericFloorIconTemplates: FloorIconTemplateI = {
   circleSlice: {
     numeric: 'mdi:circle-slice-[[floor]]',
     numeric_limit: 8,
+    default: 'mdi:circle-slice-8',
   },
   hexagonSlice: {
     numeric: 'mdi:hexagon-slice-[[floor]]',
     numeric_limit: 6,
+    default: 'mdi:hexagon-slice-6',
   },
 } as const;
 

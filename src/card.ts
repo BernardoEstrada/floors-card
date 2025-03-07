@@ -418,6 +418,7 @@ export default class FloorsCard extends LitElement {
           domain: this.config.preferred_icons[domain],
         }
         const icon = (
+          entity.attributes.icon ||
           preferredIconFor.entity ||
           preferredIconFor.substring ||
           preferredIconFor.class ||
