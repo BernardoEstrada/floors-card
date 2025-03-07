@@ -65,13 +65,15 @@ export const styles = css`
     /* margin: 8px 0; */
     display: flex;
     align-items: center;
-    &.entity-icons-right {
-      justify-content: space-between;
-    }
-    &.entity-icons-left {
-      justify-content: flex-start;
-    }
   }
+
+  .area.entity-icons-right {
+    justify-content: space-between;
+  }
+  .area.entity-icons-left {
+    justify-content: flex-start;
+  }
+
   .entities {
     display: flex;
     flex-wrap: nowrap;

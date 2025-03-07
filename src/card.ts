@@ -23,6 +23,7 @@ import {
   defaultIcons,
   defaultColors,
   getFloorIconFromTemplate,
+  Color,
 } from "./helpers";
 import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
 
@@ -334,11 +335,14 @@ export default class FloorsCard extends LitElement {
       return this._entityCards.get(entity_id)!;
     }
 
-    const entityColor = this._getEntityColor(entity_id);
+    const entityColorString = this._getEntityColor(entity_id)
+    const entityColor = Color.fromString(entityColorString)
+      || Color.fromHassProperty(document.documentElement, entityColorString);
+    
     const icon = this._getEntityIcon(entity_id);
+    const iconColor = entityColor?.toRGB();
+    const backgroundColor = entityColor?.toRGBA(0.2); 
 
-    const iconColor = entityColor.includes("#") ? entityColor : `var(--${entityColor}-color)`;
-    const backgroundColor = `rgb(from ${iconColor} r g b / 0.2)`; 
     return html`
       <div class="entity-card">
         <ha-icon-button
