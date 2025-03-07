@@ -33,8 +33,8 @@ export const exampleStates = [
 export const defaultIcons = {
   light: 'mdi:lightbulb',
   binary_sensor: {
-    door: 'mdi:door',
-    window: 'mdi:window-closed',
+    door: 'mdi:door-open',
+    window: 'mdi:window-open',
     occupancy: 'mdi:account',
     tamper: 'mdi:alert',
     motion: 'mdi:walk',
