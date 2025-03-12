@@ -1,4 +1,4 @@
-import { HomeAssistant } from "./hass-types";
+import { HomeAssistant } from "ha";
 import * as en from "./translations/en.json";
 import * as es from "./translations/es.json";
 

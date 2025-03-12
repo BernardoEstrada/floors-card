@@ -1,11 +1,15 @@
 import { cardName, exampleDomains, exampleClasses, exampleStates, availableFloorIconTemplates } from "./helpers";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { HaFormBaseSchema, HaFormSchema, HaFormSelectSchema } from "./hass-types/src/components/ha-form/types";
 import { any, array, assert, assign, boolean, literal, number, object, optional, string, union } from "superstruct";
-import { HomeAssistant, LovelaceCardConfig } from "./hass-types";
-import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
-import { SelectSelector } from "./hass-types/src/data/selector";
+import {
+  HaFormSchema,
+  HaFormSelectSchema,
+  HomeAssistant,
+  LovelaceCardConfig,
+  LovelaceCardEditor,
+  SelectSelector
+} from "ha";
 import setupCustomlocalize from "localize";
 import { FloorsCardConfig } from "types";
 

@@ -8,7 +8,8 @@ import {
   LovelaceCardConfig,
   FloorRegistryEntry,
   AreaRegistryEntry,
-} from "./hass-types";
+  LovelaceCardEditor,
+} from "ha";
 import {
   FloorsCardConfig,
   Domain,
@@ -25,7 +26,6 @@ import {
   getFloorIconFromTemplate,
   Color,
 } from "./helpers";
-import { LovelaceCardEditor } from "./hass-types/src/panels/lovelace/types";
 
 
 registerCard({
@@ -373,7 +373,7 @@ export default class FloorsCard extends LitElement {
   private async _createCard(
     cardConfig: LovelaceCardConfig
   ): Promise<TemplateResult> {
-    const helpers = await window.loadCardHelpers();
+    const helpers = await (window as any).loadCardHelpers();
     const card = helpers.createCardElement(cardConfig);
     card.hass = this._hass;
     // await card.requestUpdate();

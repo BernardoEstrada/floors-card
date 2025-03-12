@@ -3430,6 +3430,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"memoize-one@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "memoize-one@npm:6.0.0"
+  checksum: 10c0/45c88e064fd715166619af72e8cf8a7a17224d6edf61f7a8633d740ed8c8c0558a4373876c9b8ffc5518c2b65a960266adf403cc215cb1e90f7e262b58991f54
+  languageName: node
+  linkType: hard
+
 "mime@npm:1.6.0":
   version: 1.6.0
   resolution: "mime@npm:1.6.0"
@@ -4161,6 +4168,7 @@ __metadata:
     eslint: "npm:^9.21.0"
     home-assistant-js-websocket: "npm:^9.4.0"
     lit: "npm:^3.2.1"
+    memoize-one: "npm:^6.0.0"
     prettier: "npm:^3.5.2"
     rollup: "npm:^4.34.8"
     rollup-plugin-dev: "npm:^2.0.5"
