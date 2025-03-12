@@ -56,8 +56,10 @@ declare global {
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
   name?: string;
+  icon?: string;
   device_id?: string;
   area_id?: string;
+  labels: string[];
   hidden?: boolean;
   entity_category?: "config" | "diagnostic";
   translation_key?: string;
@@ -65,28 +67,52 @@ export interface EntityRegistryDisplayEntry {
   display_precision?: number;
 }
 
-export interface DeviceRegistryEntry {
+export interface RegistryEntry {
+  created_at: number;
+  modified_at: number;
+}
+
+export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
-  connections: Array<[string, string]>;
-  identifiers: Array<[string, string]>;
+  config_entries_subentries: Record<string, (string | null)[]>;
+  connections: [string, string][];
+  identifiers: [string, string][];
   manufacturer: string | null;
   model: string | null;
+  model_id: string | null;
   name: string | null;
+  labels: string[];
   sw_version: string | null;
   hw_version: string | null;
+  serial_number: string | null;
   via_device_id: string | null;
   area_id: string | null;
   name_by_user: string | null;
   entry_type: "service" | null;
   disabled_by: "user" | "integration" | "config_entry" | null;
   configuration_url: string | null;
+  primary_config_entry: string | null;
 }
 
-export interface AreaRegistryEntry {
+export interface AreaRegistryEntry extends RegistryEntry {
+  aliases: string[];
   area_id: string;
+  floor_id: string | null;
+  humidity_entity_id: string | null;
+  icon: string | null;
+  labels: string[];
   name: string;
   picture: string | null;
+  temperature_entity_id: string | null;
+}
+
+export interface FloorRegistryEntry extends RegistryEntry {
+  floor_id: string;
+  name: string;
+  level: number | null;
+  icon: string | null;
+  aliases: string[];
 }
 
 export interface ThemeSettings {
@@ -166,13 +192,13 @@ export interface ServiceCallResponse {
 }
 
 export interface HomeAssistant {
-  auth: Auth;
   connection: Connection;
   connected: boolean;
   states: HassEntities;
-  entities: { [id: string]: EntityRegistryDisplayEntry };
-  devices: { [id: string]: DeviceRegistryEntry };
-  areas: { [id: string]: AreaRegistryEntry };
+  entities: Record<string, EntityRegistryDisplayEntry>;
+  devices: Record<string, DeviceRegistryEntry>;
+  areas: Record<string, AreaRegistryEntry>;
+  floors: Record<string, FloorRegistryEntry>;
   services: HassServices;
   config: HassConfig;
   themes: Themes;
@@ -204,7 +230,9 @@ export interface HomeAssistant {
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
-    target?: ServiceCallRequest["target"]
+    target?: ServiceCallRequest["target"],
+    notifyOnError?: boolean,
+    returnResponse?: boolean
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
@@ -212,6 +240,13 @@ export interface HomeAssistant {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ): Promise<T>;
+  callApiRaw( // introduced in 2024.11
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>,
+    signal?: AbortSignal
+  ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
