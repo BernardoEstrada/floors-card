@@ -1,4 +1,4 @@
-import { FloorRegistryEntry } from "hass-types";
+import { FloorRegistryEntry } from "ha";
 
 export const availableFloorIconTemplates = [
   'home',

@@ -1454,6 +1454,103 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/animation@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/animation@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/fba365da154a0f2569f52373416b0556e4ecd074286163be9abd30bf0d7a2235afe1cdfd0252a874426fe9be41cda2edcd64a024b867580b68dc2ed55698eaae
+  languageName: node
+  linkType: hard
+
+"@material/base@npm:14.0.0-canary.53b3cad2f.0, @material/base@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/base@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/c40efdaf3741be9fe1c1ffbd5c850742d8673932e0803ba82b043e059b6f2597655359a29fe92f221063731a5ce19a04fbafa0b5bd4adf04f6abac9a3f59509f
+  languageName: node
+  linkType: hard
+
+"@material/dom@npm:14.0.0-canary.53b3cad2f.0, @material/dom@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/dom@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/98aaa70c154895d301e7226beac1fb9ea71f8e170b3ef3bdd5b435655e465a90fd11e0074403edf66ed5e6b1570678f8488b235cee4914593a10ce99b423750c
+  languageName: node
+  linkType: hard
+
+"@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/cc473e415c000f54fb6bd2120e130ad4ece75780d57e1c2dbfcc14fe4631c6826a4c570a43a838faeffd821f3f15b4b505ca271f87aa171e0da0319d89741383
+  languageName: node
+  linkType: hard
+
+"@material/mwc-base@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@material/mwc-base@npm:0.27.0"
+  dependencies:
+    "@material/base": "npm:=14.0.0-canary.53b3cad2f.0"
+    "@material/dom": "npm:=14.0.0-canary.53b3cad2f.0"
+    lit: "npm:^2.0.0"
+    tslib: "npm:^2.0.1"
+  checksum: 10c0/a5b12d5350ace9c4b1e5abab0e17b87a06dcfa21b8c5a0f4def0d3f52da1930e9a70420ab65cd6318efb446c65526f35e47ec549c03d90826d6bee955b9625bb
+  languageName: node
+  linkType: hard
+
+"@material/mwc-ripple@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@material/mwc-ripple@npm:0.27.0"
+  dependencies:
+    "@material/dom": "npm:=14.0.0-canary.53b3cad2f.0"
+    "@material/mwc-base": "npm:^0.27.0"
+    "@material/ripple": "npm:=14.0.0-canary.53b3cad2f.0"
+    lit: "npm:^2.0.0"
+    tslib: "npm:^2.0.1"
+  checksum: 10c0/f53e1e06bf368d40bfdaeff97e8d0ce29e4373bbb46d2e4619b4afee2df74bceb15f35bae57d26a8451da189f0c4f4d3d3afc1106c2399f5ee6203d9a2d9c103
+  languageName: node
+  linkType: hard
+
+"@material/ripple@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/ripple@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
+    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/205a1eb51382ea5ee3c43f8223c19698eb381782d656561452f9f3c775ce5a91fd8202c8d23c2c94b210b54dc11f35c0d681235201b651eb8fddc3d0090e1d90
+  languageName: node
+  linkType: hard
+
+"@material/rtl@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/rtl@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/a650e344b0ad166806fc43aa9f357e5e2626b4d95554083592d3aaa0c584ea87e159d2858c53bb55ca45671ce87b3211d4f09b2ade34986b55fd1ae1b613502d
+  languageName: node
+  linkType: hard
+
+"@material/theme@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/theme@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/4070a941ef23171d83ad98596935a13ea671c98281d2ad7f1ae14d0d7022f005bd8b739f74c7e0b74d1080deee827a06b998a8634a53298f07b9b7724eb684db
+  languageName: node
+  linkType: hard
+
 "@npmcli/agent@npm:^3.0.0":
   version: 3.0.0
   resolution: "@npmcli/agent@npm:3.0.0"
@@ -3244,7 +3341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.1.1":
+"lit@npm:^2.0.0, lit@npm:^2.1.1":
   version: 2.8.0
   resolution: "lit@npm:2.8.0"
   dependencies:
@@ -3330,6 +3427,13 @@ __metadata:
     promise-retry: "npm:^2.0.1"
     ssri: "npm:^12.0.0"
   checksum: 10c0/c40efb5e5296e7feb8e37155bde8eb70bc57d731b1f7d90e35a092fde403d7697c56fb49334d92d330d6f1ca29a98142036d6480a12681133a0a1453164cb2f0
+  languageName: node
+  linkType: hard
+
+"memoize-one@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "memoize-one@npm:6.0.0"
+  checksum: 10c0/45c88e064fd715166619af72e8cf8a7a17224d6edf61f7a8633d740ed8c8c0558a4373876c9b8ffc5518c2b65a960266adf403cc215cb1e90f7e262b58991f54
   languageName: node
   linkType: hard
 
@@ -4050,6 +4154,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.26.9"
     "@babel/preset-env": "npm:^7.26.9"
+    "@material/mwc-ripple": "npm:^0.27.0"
     "@rollup/plugin-babel": "npm:^6.0.4"
     "@rollup/plugin-commonjs": "npm:^28.0.2"
     "@rollup/plugin-json": "npm:^6.1.0"
@@ -4063,6 +4168,7 @@ __metadata:
     eslint: "npm:^9.21.0"
     home-assistant-js-websocket: "npm:^9.4.0"
     lit: "npm:^3.2.1"
+    memoize-one: "npm:^6.0.0"
     prettier: "npm:^3.5.2"
     rollup: "npm:^4.34.8"
     rollup-plugin-dev: "npm:^2.0.5"
@@ -4429,7 +4535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.1.0, tslib@npm:^2.8.1":
+"tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
