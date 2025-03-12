@@ -10,8 +10,9 @@
     "start": "rollup -c --watch --bundleConfigAsCjs",
     "build": "rollup -c --bundleConfigAsCjs",
     "format": "prettier --write .",
+    "start:hass": "yarn start:hass-stable",
     "start:hass-stable": "docker run -d --rm -p8123:8123 -v ./.hass_dev:/config homeassistant/home-assistant:stable",
-    "start:hass": "docker run -d --rm -p8123:8123 -v ./.hass_dev:/config homeassistant/home-assistant:beta",
+    "start:hass-beta": "docker run -d --rm -p8123:8123 -v ./.hass_dev:/config homeassistant/home-assistant:beta",
     "start:hass-dev": "docker run -d --rm -p8123:8123 -v ./.hass_dev:/config homeassistant/home-assistant:dev",
     "logs:hass": "docker logs -f $(docker ps -q --filter ancestor=homeassistant/home-assistant:stable)",
     "stop:hass": "docker stop $(docker ps -q --filter ancestor=homeassistant/home-assistant:stable)"
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@babel/core": "^7.26.9",
     "@babel/preset-env": "^7.26.9",
+    "@material/mwc-ripple": "^0.27.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-json": "^6.1.0",
