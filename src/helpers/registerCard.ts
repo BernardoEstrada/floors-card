@@ -4,10 +4,14 @@ export interface RegisterCardParams {
   description: string;
 }
 
-export default function registerCard(params: RegisterCardParams) {
-  window.customCards = window.customCards || [];
 
-  window.customCards.push({
+export default function registerCard(params: RegisterCardParams) {
+  const windowWithCards = window as unknown as Window & {
+    customCards: unknown[];
+  };
+  windowWithCards.customCards = windowWithCards.customCards || [];
+
+  windowWithCards.customCards.push({
     ...params,
     preview: true,
     // documentationURL: `${repository.url}/blob/main/docs/cards/${cardPage}.md`,

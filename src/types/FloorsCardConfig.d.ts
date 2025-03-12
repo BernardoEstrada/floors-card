@@ -1,4 +1,4 @@
-import type { LovelaceCardConfig } from "#hass-types";
+import type { LovelaceCardConfig } from "ha";
 import { FloorIconTemplate } from "helpers";
 import type { Domain, DomainIncludes } from "./Domain";
 

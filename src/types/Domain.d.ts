@@ -1,4 +1,4 @@
-import { FIXED_DOMAIN_STATES } from "../hass-types/src/common/entity/get_states";
+import { FIXED_DOMAIN_STATES } from "ha";
 
 export type Domain = keyof typeof FIXED_DOMAIN_STATES;
 export type DomainIncludes = {
