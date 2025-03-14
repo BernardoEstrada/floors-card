@@ -13,20 +13,21 @@ import {
 import setupCustomlocalize from "localize";
 import { FloorsCardConfig } from "types";
 
+const LOCALIZE_PATH = ['editor'];
 
 interface HaFormSelectSchemaAny extends HaFormSelectSchema {
   options: readonly (readonly [any, string])[];
 }
-const localize = setupCustomlocalize();
+const localize = setupCustomlocalize(undefined, LOCALIZE_PATH);
 
 const iconVisibilitySchema: SelectSelector = {
   select: {
     mode: 'dropdown',
     options: [
-      { value: false, label: localize('editor.card.floors.icon_visibility.false') },
-      { value: 'if_available', label: localize('editor.card.floors.icon_visibility.if_available') },
-      { value: 'always', label: localize('editor.card.floors.icon_visibility.always') },
-      { value: 'override', label: localize('editor.card.floors.icon_visibility.override') },
+      { value: false, label: localize('icon_visibility.false') },
+      { value: 'if_available', label: localize('icon_visibility.if_available') },
+      { value: 'always', label: localize('icon_visibility.always') },
+      { value: 'override', label: localize('icon_visibility.override') },
     ]
   }
 };
@@ -34,8 +35,8 @@ const iconPositionSchema: SelectSelector = {
   select: {
     mode: 'dropdown',
     options: [
-      { value: 'left', label: localize('editor.card.floors.icon_position.left') },
-      { value: 'right', label: localize('editor.card.floors.icon_position.right') },
+      { value: 'left', label: localize('icon_position.left') },
+      { value: 'right', label: localize('icon_position.right') },
     ]
   }
 };
@@ -49,24 +50,24 @@ const multiCustomSelectorSelect = {
 }
 
 const floorSortMethodSelector: SelectSelector = { select: { reorder:true, multiple: true, options: [
-  { value: 'level', label: localize('editor.card.floors.sorting.level') },
-  { value: 'name', label: localize('editor.card.floors.sorting.name') },
-  { value: 'id', label: localize('editor.card.floors.sorting.id') },
+  { value: 'level', label: localize('sorting.level') },
+  { value: 'name', label: localize('sorting.name') },
+  { value: 'id', label: localize('sorting.id') },
 ]}}
 
 const areaSortMethodSelector: SelectSelector = { select: { reorder:true, multiple: true, options: [
-  { value: 'name', label: localize('editor.card.floors.sorting.name') },
-  { value: 'entities', label: localize('editor.card.floors.sorting.entities') },
+  { value: 'name', label: localize('sorting.name') },
+  { value: 'entities', label: localize('sorting.entities') },
 ]}}
 
 const sortOrderSelector: SelectSelector = { select: { options: [
-  { value: 'asc', label: localize('editor.card.floors.sorting.asc') },
-  { value: 'desc', label: localize('editor.card.floors.sorting.desc') },
+  { value: 'asc', label: localize('sorting.asc') },
+  { value: 'desc', label: localize('sorting.desc') },
 ]}}
 const domainSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleDomains } }
 const classSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleClasses } }
 const stateSelectorCustom: SelectSelector = { select: { ...multiCustomSelectorSelect.select, options: exampleStates } }
-const fallbackIconSelector: SelectSelector = { select: { options: availableFloorIconTemplates.map((icon) => ({ value: icon, label: localize(`editor.card.floors.icon_templates.${icon}`) })) } }
+const fallbackIconSelector: SelectSelector = { select: { options: availableFloorIconTemplates.map((icon) => ({ value: icon, label: localize(`icon_templates.${icon}`) })) } }
 
 
 const floorIconTemplatesSchema: HaFormSchema[] = [
@@ -82,17 +83,21 @@ const areaIconEnabledPosition: HaFormSchema[] = [
 
 const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchemaAny)[] => {
   const floorIconSettingsSchema: HaFormSchema[] = [
-    { name: 'show_floor_icons', selector: iconVisibilitySchema},
-    ...['always', 'override'].includes(config.show_floor_icons as string) ? floorIconTemplatesSchema : [],
-    ...config.show_floor_icons ? floorIconEnabledSchema : [],
-    { name: 'floor_gap', type: 'integer' },
+    { type: 'grid', name: '!floor_icon_settings', flatten: true, schema: [
+      { name: 'show_floor_icons', selector: iconVisibilitySchema},
+      ...config.show_floor_icons ? floorIconEnabledSchema : [],
+      ...['always', 'override'].includes(config.show_floor_icons as string) ? floorIconTemplatesSchema : [],
+      { name: 'floor_gap', type: 'integer' },
+    ]},
   ];
 
   const areaIconSettingsSchema: HaFormSchema[] = [
-    { name: 'show_area_icons', selector: iconVisibilitySchema},
-    ...config.show_area_icons ? areaIconEnabledPosition : [],
-    { name: 'area_gap', type: 'integer' },
-  ];
+    { type: 'grid', name: '!area_icon_settings', flatten: true, schema: [
+      { name: 'show_area_icons', selector: iconVisibilitySchema},
+      ...config.show_area_icons ? areaIconEnabledPosition : [],
+      { name: 'area_gap', type: 'integer' },
+    ]},
+  ]
 
   return [
     { name: 'heading', type: 'string' },
@@ -104,11 +109,15 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
     ]},
     { type: 'expandable', name: 'groups.sorting', flatten: true, schema: [
       { type: 'constant', name: 'groups.sorting_floors' },
-      { name: 'floor_sort_method', selector: floorSortMethodSelector },
-      { name: 'floor_sort_order', selector: sortOrderSelector },
+      { type: 'grid', name: '!floor_sorting', flatten: true, schema: [
+        { name: 'floor_sort_method', selector: floorSortMethodSelector },
+        { name: 'floor_sort_order', selector: sortOrderSelector },
+      ]},
       { type: 'constant', name: 'groups.sorting_areas' },
-      { name: 'area_sort_method', selector: areaSortMethodSelector },
-      { name: 'area_sort_order', selector: sortOrderSelector },
+      { type: 'grid', name: '!area_sorting', flatten: true, schema: [
+        { name: 'area_sort_method', selector: areaSortMethodSelector },
+        { name: 'area_sort_order', selector: sortOrderSelector },
+      ]},
       { type: 'constant', name: 'groups.sorting_entities' },
       { name: 'domain_sort', selector: domainSelectorCustom },
       { name: 'class_sort', selector: classSelectorCustom },
@@ -117,7 +126,7 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
       { name: 'include_domains', selector: domainSelectorCustom},
       { name: 'include_classes', selector: classSelectorCustom},
       { name: 'include_states', selector: stateSelectorCustom},
-      { type: 'grid', name: 'include_bools', flatten: true, schema: [
+      { type: 'grid', name: '!include_bools', flatten: true, schema: [
         { name: 'include_all', type: 'boolean' },
         { name: 'include_hidden', type: 'boolean' },
     ]},
@@ -185,7 +194,6 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
 {
   @state() private _config?: LovelaceCardConfig;
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @property({ attribute: false }) public localize = setupCustomlocalize(this.hass);
   
   connectedCallback() {
     super.connectedCallback();
@@ -207,7 +215,15 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
   }
 
   private _computeLabel = (schema: HaFormSchema) => {
-    return this.localize(`editor.card.floors.${schema.name}`);
+    const localize = setupCustomlocalize(
+      this.hass,
+      LOCALIZE_PATH,
+      ['ui', 'panel', 'lovelace', 'editor', 'card', 'generic'],
+    );
+
+    const prefix = schema.context?.prefix;
+    const localized =  localize(`${prefix ? `${prefix}.` : ''}${schema.name}`);
+    return localized;
   };
 
   protected render() {

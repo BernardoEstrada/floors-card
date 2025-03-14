@@ -1,33 +1,36 @@
-import { HomeAssistant } from "ha";
-import * as en from "./translations/en.json";
-import * as es from "./translations/es.json";
+import { HomeAssistant } from 'ha';
+import { en, es } from 'translations';
+import { FloorsCardTranslations } from 'types';
 
-const languages: Record<string, unknown> = {
+
+const languages: Record<string, FloorsCardTranslations> = {
   en,
   es,
 };
 
-const DEFAULT_LANG = "en";
+const DEFAULT_LANG = 'en';
 
 function getTranslatedString(key: string, lang: string): string | undefined {
   try {
-    return key
-      .split(".")
-      .reduce(
-        (o, i) => (o as Record<string, unknown>)[i],
-        languages[lang]
-      ) as string;
+    return key.split('.').reduce((acc, cur) => {
+      return acc[cur];
+    }, languages[lang] as any);
+
   } catch (_) {
     return undefined;
   }
 }
 
-export default function setupCustomlocalize(hass?: HomeAssistant) {
-  return function (key: string) {
+export default function setupCustomlocalize(hass?: HomeAssistant, path?: string[], hassPath?: string[]): (key: string) => string {
+  return function (key: string): string {
+    if (!key || key.startsWith('!')) return '';
     const lang = hass?.locale.language ?? DEFAULT_LANG;
+    const composedKey = `${path?.join('.') || 'root' }.${key}`
 
-    let translated = getTranslatedString(key, lang);
-    if (!translated) translated = getTranslatedString(key, DEFAULT_LANG);
-    return translated ?? key;
+    let translated = getTranslatedString(composedKey, lang);
+    if (!translated) translated = getTranslatedString(composedKey, DEFAULT_LANG);
+    if (!translated && hass && hassPath) translated = hass.localize(`${hassPath.join('.')}.${key}`);
+    if (!translated) console.warn(`Translation for key ${composedKey} not found`);
+    return translated ?? composedKey;
   };
 }
