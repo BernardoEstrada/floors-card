@@ -2,13 +2,17 @@ import { html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { styles } from "./card.styles";
 import { until } from "lit/directives/until.js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import {
   HomeAssistant,
   LovelaceCardConfig,
   FloorRegistryEntry,
   AreaRegistryEntry,
   LovelaceCardEditor,
+  hasAction,
+  actionHandler,
+  handleAction,
+  ActionHandlerEvent,
 } from "ha";
 import {
   FloorsCardConfig,
@@ -25,7 +29,9 @@ import {
   defaultColors,
   getFloorIconFromTemplate,
   Color,
+  entityCanBeToggled,
 } from "./helpers";
+import { getValidatedActions, ValidatedEntityActions } from "helpers/entityCanBeToggled";
 
 
 registerCard({
@@ -59,7 +65,8 @@ export default class FloorsCard extends LitElement {
 
   public setConfig(config: Partial<FloorsCardConfig>): void {
     configValidator(config);
-    this.config = { ...fallbackConfig, ...config };
+    const entity_actions = { ...fallbackConfig.entity_actions, ...config.entity_actions };
+    this.config = { ...fallbackConfig, ...config, entity_actions };
   }
 
   set hass(hass: HomeAssistant) {
@@ -350,7 +357,11 @@ export default class FloorsCard extends LitElement {
           class="entity-card-button"
           size="50"
           style="background-color: ${backgroundColor};"
-          @click=${() => this._handleMoreInfo(entity_id)}
+          @action=${e => this._handleAction(entity_id, e)}
+          .actionHandler=${actionHandler({
+              hasHold: hasAction(this.config.entity_actions?.hold_action),
+              hasDoubleClick: hasAction(this.config.entity_actions?.double_tap_action),
+            })}
         >
           <ha-icon .icon=${icon} style="color: ${iconColor};"></ha-icon>
         </ha-icon-button>
@@ -358,16 +369,28 @@ export default class FloorsCard extends LitElement {
     `;
   }
 
-  private _handleMoreInfo(entityId: string) {
-    const event: Event & { detail?: Object } = new Event("hass-more-info", {
-      bubbles: true,
-      composed: true,
-    });
-    event.detail = {
-      entityId,
-      view: "info",
-    };
-    this.dispatchEvent(event);
+  private _handleAction(entityId: string, event: ActionHandlerEvent): void {
+    const config = getValidatedActions(entityId, this.config.entity_actions);
+    let trigger = event.detail.action;
+    let action = config[`${trigger}_action`]
+
+    // if action is defined but not valid, fallback to next action (tap -> hold -> double_tap)
+    // if next action is defined but not valid, fallback to next until all actions are checked, then just return
+    // trigger cant be undefined and has to be one of the three
+
+    if (config.fallback_to_next_action) {
+      while (action && !action.isValid) {
+        const fallbackTrigger = trigger === 'tap' ? 'hold' : trigger === 'hold' ? 'double_tap' : undefined;
+        if (!fallbackTrigger) return;
+
+        trigger = fallbackTrigger;
+        action = config[`${trigger}_action`];
+      }
+    }
+
+    if (!action) return;
+
+    handleAction(this, this._hass!, config, trigger);
   }
 
   private async _createCard(

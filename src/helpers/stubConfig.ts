@@ -11,6 +11,11 @@ export const stubConfig: Partial<FloorsCardConfig> = {
   area_icons_position: "left",
   area_gap: 8,
   entity_icon_placement: "right",
+  entity_actions: {
+    tap_action: { action: "toggle" },
+    hold_action: { action: "more-info" },
+    fallback_to_next_action: true,
+  },
   include_states: ["on"],
   include_domains: ["light", "input_boolean", "binary_sensor"],
   include_classes: ["door", "window", "occupancy", "tamper", "no_class"],

@@ -9,6 +9,10 @@ export const fallbackConfig: FloorsCardConfig = {
   show_area_icons: 'if_available',
   default_area_icon: "mdi:texture-box",
   off_color: "grey",
+  entity_actions: {
+    tap_action: { action: "more-info" },
+    fallback_to_next_action: true,
+  },
   area_icons_position: "left",
   entity_icon_placement: "right",
   domain_sort: [
