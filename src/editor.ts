@@ -3,6 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { any, array, assert, assign, boolean, literal, number, object, optional, string, union } from "superstruct";
 import {
+  actionConfigStruct,
   HaFormSchema,
   HaFormSelectSchema,
   HomeAssistant,
@@ -101,11 +102,21 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
 
   return [
     { name: 'heading', type: 'string' },
-    { type: 'expandable', name: 'floor_config', flatten: true, schema: floorIconSettingsSchema},
-    { type: 'expandable', name: 'area_config', flatten: true, schema: areaIconSettingsSchema},
-    { type: 'grid', name: 'entity_config', flatten: true, schema: [
-      { name: 'entity_icon_placement', selector: iconPositionSchema},
-      { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
+    { type: 'expandable', name: 'groups.floor_config', flatten: true, schema: floorIconSettingsSchema},
+    { type: 'expandable', name: 'groups.area_config', flatten: true, schema: areaIconSettingsSchema},
+    { type: 'expandable', name: 'groups.entities_config', flatten: true, schema: [
+      { type: 'grid', name: '!entity_icons', flatten: true, schema: [
+        { name: 'entity_icon_placement', selector: iconPositionSchema},
+        { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
+      ]},
+      { type: 'grid', name: 'entity_actions', column_min_width: '100%', schema: [
+        { type: 'grid', name: '!entity_action_events', column_min_width: '40%', flatten: true, schema: [
+          { name: 'tap_action', selector: { ui_action: { default_action: 'more-info' }}},
+          { name: 'hold_action', selector: { ui_action: {}}},
+          { name: 'double_tap_action', selector: { ui_action: {}}},
+        ]},
+        { name: 'fallback_to_next_action', type: 'boolean', context: { prefix: 'entity_actions' }},
+      ]},
     ]},
     { type: 'expandable', name: 'groups.sorting', flatten: true, schema: [
       { type: 'constant', name: 'groups.sorting_floors' },
@@ -170,6 +181,12 @@ const floorsCardConfigStruct = assign(
     default_area_icon: optional(string()),
     area_icons_position: alignment,
     entity_icon_placement: alignment,
+    entity_actions: optional(object({
+      tap_action: optional(actionConfigStruct),
+      hold_action: optional(actionConfigStruct),
+      double_tap_action: optional(actionConfigStruct),
+      fallback_to_next_action: optional(boolean()),
+    })),
     floor_sort_method: optional(array(union([literal('level'), literal('name'), literal('id')]))),
     floor_sort_order: optional(union([literal('asc'), literal('desc')])),
     area_sort_method: optional(array(union([literal('name'), literal('entities')]))),
