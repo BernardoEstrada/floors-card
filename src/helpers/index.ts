@@ -6,3 +6,4 @@ export { default as registerCard } from "./registerCard";
 export * from "./floorIcons";
 export { Color } from "./colors";
 export { entityCanBeToggled } from "./entityCanBeToggled";
+export { getPreferredValue } from "./getPreferredValues";

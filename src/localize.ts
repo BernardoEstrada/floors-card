@@ -24,6 +24,7 @@ function getTranslatedString(key: string, lang: string): string | undefined {
 export default function setupCustomlocalize(hass?: HomeAssistant, path?: string[], hassPath?: string[]): (key: string) => string {
   return function (key: string): string {
     if (!key || key.startsWith('!')) return '';
+
     const lang = hass?.locale.language ?? DEFAULT_LANG;
     const composedKey = `${path?.join('.') || 'root' }.${key}`
 

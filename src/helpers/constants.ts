@@ -31,7 +31,21 @@ export const exampleStates = [
 ] as const;
 
 export const defaultIcons = {
-  light: 'mdi:lightbulb',
+  light: {
+    on: 'mdi:lightbulb',
+    off: 'mdi:lightbulb-off',
+  },
+  fan: {
+    on: 'mdi:fan',
+    off: 'mdi:fan-off',
+  },
+  switch: {
+    outlet: 'mdi:power-socket-us',
+    no_class: {
+      on: 'mdi:toggle-switch-variant',
+      off: 'mdi:toggle-switch-variant-off',
+    },
+  },
   binary_sensor: {
     door: 'mdi:door-open',
     window: 'mdi:window-open',
@@ -53,5 +67,7 @@ export const defaultColors = {
     motion: 'green',
     no_class: 'grey',
   },
+  switch: 'green',
+  fan: 'lime',
   fallback: 'grey',
 } as const;

@@ -17,12 +17,16 @@ export const es: FloorsCardTranslations = {
     entity_actions: {
       fallback_to_next_action: 'Ejecutar Siguiente Acción si No Disponible',
     },
+    keep_entity_after_toggle_for: 'Mantener entidad después de cambiar por',
+    keep_entity_after_toggle_for_suffix: 'segundos',
     floor_sort_method: 'Ordenar Pisos por',
     floor_sort_order: 'Dirección de Orden',
     area_sort_method: 'Ordenar Áreas por',
     area_sort_order: 'Dirección de Orden',
     class_sort: 'Ordenar por Clase',
     domain_sort: 'Ordenar por Dominio',
+    ignore_floors: 'Añadir Piso Ignorado',
+    ignore_areas: 'Añadir Área Ignorada',
     include_domains: 'Dominios a Incluir',
     include_classes: 'Clases a Incluir',
     include_states: 'Estados a Incluir',
@@ -31,6 +35,9 @@ export const es: FloorsCardTranslations = {
     include_hidden: 'Incluir Ocultos',
     preferred_icons: 'Iconos Preferidos',
     preferred_colors: 'Colores Preferidos',
+    animate: 'Animaciones',
+    stack_animations: 'Unir Animaciones',
+    enable_multiple_animations: 'Múltiples Animaciones',
     entities_container_card: 'Tarjeta Contenedor de Entidades',
     entity_card: 'Tarjeta de Entidad',
     groups: {
@@ -41,7 +48,9 @@ export const es: FloorsCardTranslations = {
       includes: 'Filtros',
       sorting_floors: 'Pisos',
       sorting_areas: 'Áreas',
-      sorting_entities: 'Entidades'
+      sorting_entities: 'Entidades',
+      ignore_areas: 'Ignorar Áreas',
+      ignore_floors: 'Ignorar Pisos',
     },
     icon_templates: {
       home: 'Casa',
@@ -73,7 +82,16 @@ export const es: FloorsCardTranslations = {
       id: 'ID',
       entities: 'Numero de Entidades',
       asc: 'Ascendente',
-      desc: 'Descendente'
+      desc: 'Descendente',
+    },
+    key_value_labels: {
+      key: 'Selector',
+      value: 'Valor',
+      icon: 'Icono',
+      color: 'Color',
+      animation: 'Animación',
+      add: 'Añadir',
+      remove: 'Eliminar',
     }
   },
   card: {

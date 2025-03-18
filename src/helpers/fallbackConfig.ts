@@ -8,7 +8,6 @@ export const fallbackConfig: FloorsCardConfig = {
   floor_icons_position: "left",
   show_area_icons: 'if_available',
   default_area_icon: "mdi:texture-box",
-  off_color: "grey",
   entity_actions: {
     tap_action: { action: "more-info" },
     fallback_to_next_action: true,
@@ -32,4 +31,5 @@ export const fallbackConfig: FloorsCardConfig = {
   include_hidden: false,
   preferred_icons: {},
   preferred_colors: {},
+  animate: { 'fan': 'spin' },
 };

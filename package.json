@@ -30,6 +30,7 @@
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
     "@types/node": "^22.13.5",
+    "@types/sortablejs": "^1",
     "eslint": "^9.21.0",
     "prettier": "^3.5.2",
     "rollup": "^4.34.8",
@@ -43,6 +44,7 @@
     "home-assistant-js-websocket": "^9.4.0",
     "lit": "^3.2.1",
     "memoize-one": "^6.0.0",
+    "sortablejs": "^1.15.6",
     "superstruct": "^2.0.2"
   }
 }

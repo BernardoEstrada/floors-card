@@ -1,4 +1,4 @@
-import { ActionConfig, hasAction } from "ha";
+import { ActionConfig, computeDomain, hasAction } from "ha";
 import { EntityActions } from "types";
 
 export const TOGGLEABLE_DOMAINS = [
@@ -10,7 +10,7 @@ export const TOGGLEABLE_DOMAINS = [
 ];
 
 export const entityCanBeToggled =
-  (entity: string) => TOGGLEABLE_DOMAINS.includes(entity.split(".")[0]);
+  (entity: string) => TOGGLEABLE_DOMAINS.includes(computeDomain(entity));
 
 const actionIsValid = (entity_id: string, action: ActionConfig): boolean =>
   action.action === "toggle" ? entityCanBeToggled(entity_id) : true;

@@ -1936,6 +1936,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/sortablejs@npm:^1":
+  version: 1.15.8
+  resolution: "@types/sortablejs@npm:1.15.8"
+  checksum: 10c0/cac9c8279ead93b5fc6b0dde6bf4b1c4fe067d40d7b2b3415880df823f2efe5779616009488f940a003687ace70cb3d52bda168dfad2b5f4242403cd8f4ed500
+  languageName: node
+  linkType: hard
+
 "@types/trusted-types@npm:^2.0.2":
   version: 2.0.7
   resolution: "@types/trusted-types@npm:2.0.7"
@@ -4164,6 +4171,7 @@ __metadata:
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
     "@types/node": "npm:^22.13.5"
+    "@types/sortablejs": "npm:^1"
     custom-card-helpers: "npm:^1.9.0"
     eslint: "npm:^9.21.0"
     home-assistant-js-websocket: "npm:^9.4.0"
@@ -4173,6 +4181,7 @@ __metadata:
     rollup: "npm:^4.34.8"
     rollup-plugin-dev: "npm:^2.0.5"
     rollup-plugin-serve: "npm:^2.0.3"
+    sortablejs: "npm:^1.15.6"
     superstruct: "npm:^2.0.2"
     tslib: "npm:^2.8.1"
     typescript: "npm:^5.8.2"
@@ -4343,6 +4352,13 @@ __metadata:
     atomic-sleep: "npm:^1.0.0"
     flatstr: "npm:^1.0.12"
   checksum: 10c0/3498b835071365cc94aac0eae50c5ee3c2552a4e48cf6dce59ae2d995af6c62a8f529377852b39b073b8190b772a9fb2cdb48f515c0fec4948646dea862fb120
+  languageName: node
+  linkType: hard
+
+"sortablejs@npm:^1.15.6":
+  version: 1.15.6
+  resolution: "sortablejs@npm:1.15.6"
+  checksum: 10c0/a75dcf53e5613b4106d46434e40114830f9c6449b3b439bc1925c1fbf0a0c1f044727a8f3d4ae1759fa7beaa33e7eb0c4a413e6aa88d6026577b59f3658ff727
   languageName: node
   linkType: hard
 

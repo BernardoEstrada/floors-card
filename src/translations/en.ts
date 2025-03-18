@@ -17,12 +17,16 @@ export const en: FloorsCardTranslations = {
     entity_actions: {
       fallback_to_next_action: 'Execute Next Action if Unavailable',
     },
+    keep_entity_after_toggle_for: 'Keep entity after toggle for',
+    keep_entity_after_toggle_for_suffix: 'seconds',
     floor_sort_method: 'Sort Floors by',
     floor_sort_order: 'Sort Direction',
     area_sort_method: 'Sort Areas by',
     area_sort_order: 'Sort Direction',
     class_sort: 'Sort Order by Class',
     domain_sort: 'Sort Order by Domain',
+    ignore_floors: 'Add Ignored Floor',
+    ignore_areas: 'Add Ignored Area',
     include_domains: 'Domains to Include',
     include_classes: 'Classes to Include',
     include_states: 'States to Include',
@@ -31,6 +35,9 @@ export const en: FloorsCardTranslations = {
     include_hidden: 'Include Hidden',
     preferred_icons: 'Preferred Icons',
     preferred_colors: 'Preferred Colors',
+    animate: 'Animations',
+    stack_animations: 'Stack Animations',
+    enable_multiple_animations: 'Multiple Animations',
     entities_container_card: 'Entities Container Card',
     entity_card: 'Entity Card',
     groups: {
@@ -41,7 +48,9 @@ export const en: FloorsCardTranslations = {
       includes: 'Filters',
       sorting_floors: 'Floors',
       sorting_areas: 'Areas',
-      sorting_entities: 'Entities'
+      sorting_entities: 'Entities',
+      ignore_areas: 'Ignore Areas',
+      ignore_floors: 'Ignore Floors',
     },
     icon_templates: {
       home: 'Home',
@@ -74,6 +83,15 @@ export const en: FloorsCardTranslations = {
       entities: 'Entity Count',
       asc: 'Ascending',
       desc: 'Descending',
+    },
+    key_value_labels: {
+      key: 'Selector',
+      value: 'Value',
+      icon: 'Icon',
+      color: 'Color',
+      animation: 'Animation',
+      add: 'Add',
+      remove: 'Remove',
     }
   },
   card: {
