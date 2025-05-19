@@ -1,8 +1,10 @@
 import { html, LitElement, TemplateResult, nothing } from "lit";
+import {styleMap} from 'lit/directives/style-map.js';
 import { customElement, state } from "lit/decorators.js";
 import { styles } from "./card.styles";
+import { animationKeyframes, animations } from "./animations";
 import { until } from "lit/directives/until.js";
-import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   HomeAssistant,
   LovelaceCardConfig,
@@ -13,6 +15,7 @@ import {
   actionHandler,
   handleAction,
   ActionHandlerEvent,
+  computeDomain
 } from "ha";
 import {
   FloorsCardConfig,
@@ -29,10 +32,11 @@ import {
   defaultColors,
   getFloorIconFromTemplate,
   Color,
-  entityCanBeToggled,
+  getPreferredValue,
 } from "./helpers";
-import { getValidatedActions, ValidatedEntityActions } from "helpers/entityCanBeToggled";
-
+import { getValidatedActions } from "helpers/entityCanBeToggled";
+import { FloorSortMethod, SortOrder } from "types/FloorsCardConfig";
+import { Class, TypedHassEntity } from "types/Domain";
 
 registerCard({
   type: cardName,
@@ -43,13 +47,15 @@ registerCard({
 export default class FloorsCard extends LitElement {
   private _hass?: HomeAssistant;
   @state() private _entities: HassEntity[] = [];
+  @state() private _temp_entities: string[] = [];
   @state() private _floors: Record<string, FloorRegistryEntry> = {};
   @state() private _areas: Record<string, AreaRegistryEntry> = {};
+  @state() private keepEntityAfterToggleForMs?: number;
   private _entityCards = new Map<string, Promise<TemplateResult>>();
   private _entitiesContainerCard = new Map<string, Promise<TemplateResult>>();
   private config: FloorsCardConfig;
 
-  static styles = styles;
+  static styles = [styles, ...animationKeyframes];
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("./editor");
@@ -63,8 +69,13 @@ export default class FloorsCard extends LitElement {
     this.config = fallbackConfig;
   }
 
+  private getMs = (s?: number): number | undefined => {
+    return s && s >= 0 ? s * 1000 : undefined
+  }
+
   public setConfig(config: Partial<FloorsCardConfig>): void {
     configValidator(config);
+    this.keepEntityAfterToggleForMs = this.getMs(config.keep_entity_after_toggle_for);
     const entity_actions = { ...fallbackConfig.entity_actions, ...config.entity_actions };
     this.config = { ...fallbackConfig, ...config, entity_actions };
   }
@@ -78,16 +89,16 @@ export default class FloorsCard extends LitElement {
     this.requestUpdate();
   }
 
-  private _updateEntities(hass: HomeAssistant): boolean {
-    const newEntities = Object.values(hass.states).filter(this.entityStateFilter);
+  private _updateEntities(hass: HomeAssistant, forceUpdate: boolean = false): boolean {
+    const newEntities = (Object.values(hass.states) as TypedHassEntity[]).filter(this.entityStateFilter);
     const entitiesChanged = 
-        newEntities.length !== this._entities.length ||
-        newEntities.some((e, i) =>
-            e.entity_id !== this._entities[i]?.entity_id ||
-            e.last_updated !== this._entities[i]?.last_updated
-        );
+      newEntities.length !== this._entities.length ||
+      newEntities.some((e, i) =>
+        e.entity_id !== this._entities[i]?.entity_id ||
+        e.last_updated !== this._entities[i]?.last_updated
+      );
     
-    if (!entitiesChanged) return false;
+    if (!entitiesChanged && !forceUpdate) return false;
 
     this._entities = newEntities;
     this._floors = hass.floors || {};
@@ -98,31 +109,33 @@ export default class FloorsCard extends LitElement {
     return true;
   }
 
-  private entityStateFilter = (entity: HassEntity): boolean => {
-    const domain = entity.entity_id.split(".")[0];
-    const deviceClass = entity.attributes.device_class || 'no_class';
+  private entityStateFilter = (entity: TypedHassEntity): boolean => {
+    const domain = computeDomain(entity.entity_id);
+    const deviceClass = (entity.attributes.device_class || 'no_class') as Class;
     if (this.config.include) {
-        const include = this.config.include[domain];
-        if (include) {
-            if (include.classes && !include.classes.includes(deviceClass)) return false;
-            if (include.states && !include.states.includes(entity.state)) return false;
-            if (this.config.include_states && !this.config.include_states.includes(entity.state)) return false;
-            if (this?._hass?.entities[entity.entity_id]?.hidden && !this.config.include_hidden) return false;
-            return true;
-        }
-        return false;
+      const include = this.config.include[domain];
+      if (include) {
+        if (this._temp_entities.includes(entity.entity_id)) return true;
+        if (include.classes && !include.classes.includes(deviceClass)) return false;
+        if (include.states && !include.states.includes(entity.state)) return false;
+        if (this.config.include_states && !this.config.include_states.includes(entity.state)) return false;
+        if (this?._hass?.entities[entity.entity_id]?.hidden && !this.config.include_hidden) return false;
+        return true;
+      }
+      return false;
     } else {
-        const domainIncluded = this.config.include_domains?.includes(domain as Domain) ?? false;
-        const classIncluded = this.config.include_classes?.includes(deviceClass) ?? false;
-        const stateIncluded = this.config.include_states?.includes(entity.state) ?? true;
-        const hidden = this._hass!.entities[entity.entity_id]?.hidden;
-        const includeHidden = this.config.include_hidden || !hidden;
+      const domainIncluded = this.config.include_domains?.includes(domain as Domain) ?? false;
+      const classIncluded = this.config.include_classes?.includes(deviceClass) ?? false;
+      const stateIncluded = this.config.include_states?.includes(entity.state) ?? true;
+      const hidden = this._hass!.entities[entity.entity_id]?.hidden;
+      const includeHidden = this.config.include_hidden || !hidden;
+      const entityInTempCache = this._temp_entities.includes(entity.entity_id);
 
-        return (
-            ((domainIncluded && classIncluded) || this.config.include_all) &&
-            stateIncluded &&
-            includeHidden
-        );
+      return entityInTempCache || (
+        ((domainIncluded && classIncluded) || this.config.include_all) &&
+        (stateIncluded) &&
+        includeHidden
+      );
     }
 };
 
@@ -136,7 +149,7 @@ export default class FloorsCard extends LitElement {
     `;
   }
 
-  private _compareFloors(compare_methods: ('level' | 'name' | 'id')[], order_method: 'asc' | 'desc', a: FloorRegistryEntry, b: FloorRegistryEntry): number {
+  private _compareFloors(compare_methods: FloorSortMethod[], order_method: SortOrder, a: FloorRegistryEntry, b: FloorRegistryEntry): number {
     const methods = {
       level: (a.level || 0) - (b.level || 0),
       name: a.name.localeCompare(b.name),
@@ -171,6 +184,8 @@ export default class FloorsCard extends LitElement {
     const floors: Record<string, FloorWithAreas> = {};
     Object.values(this._areas).forEach((area) => {
       const floorId = area.floor_id || "unknown";
+      if (this.config.ignore_floors?.includes(floorId)) return;
+      if (this.config.ignore_areas?.includes(area.area_id)) return;
       floors[floorId] ??= {
         ...this._floors[floorId],
         name: this._floors[floorId]?.name || "Unknown Floor",
@@ -240,14 +255,15 @@ export default class FloorsCard extends LitElement {
       : html`
           <div class="entities">
             ${entities.map((entity) =>
-              until(this._getEntityCard(entity.entity_id), html`Loading...`)
+              until(this._getEntityCard(entity.entity_id), nothing)
             )}
           </div>
         `;
     const areaIconClass = this.config.entity_icon_placement == 'left' ? 'entity-icons-left' : 'entity-icons-right'
     return html`
       <div class="area ${areaIconClass}">
-        ${this._renderAreaHeading(area)} ${entitiesCardContainer}
+        ${this._renderAreaHeading(area)}
+        ${entitiesCardContainer}
       </div>
     `;
   }
@@ -266,8 +282,8 @@ export default class FloorsCard extends LitElement {
   }
 
   private _entitySort = (a: HassEntity, b: HassEntity): number => {
-    const aDomain = a.entity_id.split(".")[0];
-    const bDomain = b.entity_id.split(".")[0];
+    const aDomain = computeDomain(a.entity_id);
+    const bDomain = computeDomain(b.entity_id);
     const domainCompare = 
         this.config.domain_sort.indexOf(aDomain) - 
         this.config.domain_sort.indexOf(bDomain);
@@ -348,8 +364,20 @@ export default class FloorsCard extends LitElement {
     
     const icon = this._getEntityIcon(entity_id);
     const iconColor = entityColor?.toRGB();
-    const backgroundColor = entityColor?.toRGBA(0.2); 
+    const backgroundColor = entityColor?.toRGBA(0.2);
 
+    const animationsStyle = this._getEntityAnimation(entity_id).map((animation) => animations[animation]);
+    const iconStyles = {
+      height: 'fit-content',
+      width: 'fit-content'
+    }
+
+    const iconHtml = animationsStyle.reduce(
+      (content, animationStyle) => html`<div style="${styleMap({...iconStyles, animation: animationStyle})}">${content}</div>`,
+      html`<ha-icon .icon=${icon} style="color: ${iconColor};"></ha-icon>`
+    )
+    // : html`<ha-icon .icon=${icon} style="${styleMap({color: iconColor, animation: animationsStyle[0]})}"></ha-icon>`;
+    
     return html`
       <div class="entity-card">
         <ha-icon-button
@@ -363,7 +391,8 @@ export default class FloorsCard extends LitElement {
               hasDoubleClick: hasAction(this.config.entity_actions?.double_tap_action),
             })}
         >
-          <ha-icon .icon=${icon} style="color: ${iconColor};"></ha-icon>
+          <!-- <ha-icon .icon=${icon} style="color: ${iconColor};"></ha-icon> -->
+          ${iconHtml}
         </ha-icon-button>
       </div>
     `;
@@ -374,12 +403,8 @@ export default class FloorsCard extends LitElement {
     let trigger = event.detail.action;
     let action = config[`${trigger}_action`]
 
-    // if action is defined but not valid, fallback to next action (tap -> hold -> double_tap)
-    // if next action is defined but not valid, fallback to next until all actions are checked, then just return
-    // trigger cant be undefined and has to be one of the three
-
     if (config.fallback_to_next_action) {
-      while (action && !action.isValid) {
+      while (!action || (action && !action.isValid)) {
         const fallbackTrigger = trigger === 'tap' ? 'hold' : trigger === 'hold' ? 'double_tap' : undefined;
         if (!fallbackTrigger) return;
 
@@ -390,12 +415,22 @@ export default class FloorsCard extends LitElement {
 
     if (!action) return;
 
+    if(action.action === 'toggle' && this.keepEntityAfterToggleForMs) {
+      this._temp_entities.push(entityId);
+      setTimeout(() => {
+        this._temp_entities = this._temp_entities.filter((entity) => entity !== entityId);
+        this._updateEntities(this._hass!, true);
+        this.requestUpdate();
+      }, this.keepEntityAfterToggleForMs);
+    }
+
     handleAction(this, this._hass!, config, trigger);
   }
 
   private async _createCard(
     cardConfig: LovelaceCardConfig
   ): Promise<TemplateResult> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const helpers = await (window as any).loadCardHelpers();
     const card = helpers.createCardElement(cardConfig);
     card.hass = this._hass;
@@ -411,58 +446,42 @@ export default class FloorsCard extends LitElement {
       icon: this._getEntityIcon(entity_id),
       icon_color: this._getEntityColor(entity_id),
     };
-    // return {
-    //   type: "custom:mushroom-template-card",
-    //   entity: entity_id,
-    //   icon: this._getEntityIcon(entity_id),
-    //   icon_color: this._getEntityColor(entity_id),
-    //   tap_action: { action: "more-info" },
-    //   card_mod: {
-    //     style: {
-    //       "mushroom-card mushroom-state-item$": css`
-    //         .container { padding: 0 !important; padding-bottom: 4px !important; }
-    //       `,
-    //     },
-    //   },
-    // };
+  }
+
+  private _getEntityAnimation(entity_id: string): string[] {
+    const entity = this._hass!.states[entity_id];
+    
+    if (this.config.stack_animations)
+      return getPreferredValue(this.config.animate, entity, true).flat()
+    
+    const top_option = getPreferredValue(this.config.animate, entity, false)
+    return Array.isArray(top_option) ? top_option : [top_option];
   }
 
   private _iconCache = new Map<string, string>();
   private _colorCache = new Map<string, string>();
 
   private _getEntityIcon(entity_id: string): string {
-    const entity = this._hass!.states[entity_id];
-    const cacheKey = `${entity_id}|${entity.attributes.icon}|${entity.state}|${entity.attributes.device_class}`;
+    const hassEntity = this._hass!.states[entity_id];
+    const cacheKey = `${entity_id}|${hassEntity.attributes.icon}|${hassEntity.state}|${hassEntity.attributes.device_class}`;
     
     if (!this._iconCache.has(cacheKey)) {
-        const [domain] = entity_id.split(".");
-        const deviceClass = entity.attributes.device_class || 'no_class';
-
-        const preferredIconFor = {
-          entity: this.config.preferred_icons[entity_id],
-          substring: Object.entries(this.config.preferred_icons).find(([key]) => entity_id.includes(key))?.[1],
-          class: this.config.preferred_icons[deviceClass],
-          domain: this.config.preferred_icons[domain],
-        }
-        const icon = (
-          entity.attributes.icon ||
-          preferredIconFor.entity ||
-          preferredIconFor.substring ||
-          preferredIconFor.class ||
-          preferredIconFor.domain ||
-          this._defaultIcon(domain, deviceClass)
-        );
-        this._iconCache.set(cacheKey, icon);
+      const icon = getPreferredValue(this.config.preferred_icons, hassEntity, false)
+        || this._defaultIcon(computeDomain(entity_id), hassEntity.attributes.device_class, hassEntity.state)
+      this._iconCache.set(cacheKey, icon);
     }
     return this._iconCache.get(cacheKey)!;
   }
 
-  private _defaultIcon(domain: string, deviceClass?: string): string {
+  private _defaultIcon(domain: string, deviceClass?: string, state?: string): string {
     const iconForDomain = defaultIcons[domain];
     if (typeof iconForDomain === 'string') return iconForDomain;
 
-    const iconForClass = iconForDomain[deviceClass];
-    if (iconForClass) return iconForClass;
+    const iconForClass = iconForDomain?.[deviceClass];
+    if (typeof iconForClass === 'string') return iconForClass;
+
+    const iconForState = iconForClass?.[state] || iconForDomain?.[state];
+    if (iconForState) return iconForState;
 
     return defaultIcons.fallback;
 
@@ -479,30 +498,20 @@ export default class FloorsCard extends LitElement {
     return this._colorCache.get(cacheKey)!;
   }
 
-  private _getEntityColorValue(entity: HassEntity): string {
-    if (entity.state === "off" && this.config.off_color)
+  private _getEntityColorValue(hassEntity: HassEntity): string {
+    if (hassEntity.state === "off" && this.config.off_color)
       return this.config.off_color;
 
-    const entityClass = entity.attributes.device_class || 'no_class';
-    const entityDomain = entity.entity_id.split(".")[0];
+    const preferredColor = getPreferredValue(this.config.preferred_colors, hassEntity, false);
 
-    const preferredColorFor = {
-      entity: this.config.preferred_colors[entity.entity_id],
-      substring: Object.entries(this.config.preferred_colors).find(([key]) => entity.entity_id.includes(key))?.[1],
-      class: this.config.preferred_colors[entityClass],
-      domain: this.config.preferred_colors[entityDomain],
+    const entity = {
+      class: hassEntity,
+      domain: computeDomain(hassEntity.entity_id),
     }
 
-    const preferredColor = (
-      preferredColorFor.entity ||
-      preferredColorFor.substring ||
-      preferredColorFor.class ||
-      preferredColorFor.domain
-    );
-
-    if (entityDomain === 'light') {
-      if (entity.attributes.rgb_color) {
-        const rgb = entity.attributes.rgb_color;
+    if (entity.domain === 'light') {
+      if (hassEntity.attributes.rgb_color) {
+        const rgb = hassEntity.attributes.rgb_color;
         return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2])
           .toString(16)
           .slice(1)}`;
@@ -512,10 +521,10 @@ export default class FloorsCard extends LitElement {
 
     if (preferredColor) return preferredColor;
 
-    const colorForDomain = defaultColors[entityDomain];
+    const colorForDomain = defaultColors[entity.domain];
     if (typeof colorForDomain === 'string') return colorForDomain;
 
-    const colorForClass = colorForDomain[entityClass];
+    const colorForClass = colorForDomain?.[entity.class];
     if (colorForClass) return colorForClass;
 
     return defaultColors.fallback;

@@ -1,5 +1,5 @@
 import { cardName, exampleDomains, exampleClasses, exampleStates, availableFloorIconTemplates } from "./helpers";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { any, array, assert, assign, boolean, literal, number, object, optional, string, union } from "superstruct";
 import {
@@ -9,14 +9,17 @@ import {
   HomeAssistant,
   LovelaceCardConfig,
   LovelaceCardEditor,
-  SelectSelector
+  SelectSelector,
 } from "ha";
 import setupCustomlocalize from "localize";
-import { FloorsCardConfig } from "types";
+import { EventWithDetail, FloorsCardConfig } from "types";
+import "./keyValueEditor.ts"
+import { availableBaseAnimations } from "animations";
 
 const LOCALIZE_PATH = ['editor'];
 
 interface HaFormSelectSchemaAny extends HaFormSelectSchema {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: readonly (readonly [any, string])[];
 }
 const localize = setupCustomlocalize(undefined, LOCALIZE_PATH);
@@ -41,6 +44,13 @@ const iconPositionSchema: SelectSelector = {
     ]
   }
 };
+
+const animationSchema: SelectSelector = {
+  select: {
+    mode: 'dropdown',
+    options: availableBaseAnimations.map((animation) => ({ value: animation, label: animation }))
+  }
+}
 
 const multiCustomSelectorSelect = {
   select: {
@@ -88,7 +98,7 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
       { name: 'show_floor_icons', selector: iconVisibilitySchema},
       ...config.show_floor_icons ? floorIconEnabledSchema : [],
       ...['always', 'override'].includes(config.show_floor_icons as string) ? floorIconTemplatesSchema : [],
-      { name: 'floor_gap', type: 'integer' },
+      { name: 'floor_gap', selector: { number: { min: 0, unit_of_measurement: 'px' } } },
     ]},
   ];
 
@@ -96,7 +106,7 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
     { type: 'grid', name: '!area_icon_settings', flatten: true, schema: [
       { name: 'show_area_icons', selector: iconVisibilitySchema},
       ...config.show_area_icons ? areaIconEnabledPosition : [],
-      { name: 'area_gap', type: 'integer' },
+      { name: 'area_gap', selector: { number: { min: 0, unit_of_measurement: 'px' } } },
     ]},
   ]
 
@@ -109,12 +119,19 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
         { name: 'entity_icon_placement', selector: iconPositionSchema},
         { name: 'off_color', selector: { ui_color: { default_color: 'disabled' }}},
       ]},
-      { type: 'grid', name: 'entity_actions', column_min_width: '100%', schema: [
-        { type: 'grid', name: '!entity_action_events', column_min_width: '40%', flatten: true, schema: [
+      { type: 'grid', name: '!entity_action_events', column_min_width: '40%', flatten: true, schema: [
+        { type: 'grid', name: 'entity_actions', schema: [
           { name: 'tap_action', selector: { ui_action: { default_action: 'more-info' }}},
+        ]},
+        { type: 'grid', name: 'entity_actions', column_min_width: '100%', schema: [
           { name: 'hold_action', selector: { ui_action: {}}},
+        ]},
+        { type: 'grid', name: 'entity_actions', column_min_width: '100%', schema: [
           { name: 'double_tap_action', selector: { ui_action: {}}},
         ]},
+        { name: 'keep_entity_after_toggle_for', selector: { number: { min: 0, mode: 'box', unit_of_measurement: localize('keep_entity_after_toggle_for_suffix') } } },
+      ]},
+      { type: 'grid', name: 'entity_actions', schema: [
         { name: 'fallback_to_next_action', type: 'boolean', context: { prefix: 'entity_actions' }},
       ]},
     ]},
@@ -134,17 +151,22 @@ const genSchema = (config: FloorsCardConfig): (HaFormSchema | HaFormSelectSchema
       { name: 'class_sort', selector: classSelectorCustom },
     ]},
     { type: 'expandable', name: 'groups.includes', flatten: true, schema: [
+      { type: 'expandable', name: 'groups.ignore_floors', flatten: true, schema: [
+        { name: 'ignore_floors', selector: { floor: { multiple: true }}},
+      ]},
+
+      { type: 'expandable', name: 'groups.ignore_areas', flatten: true, schema: [
+        { name: 'ignore_areas', selector: { area: { multiple: true }}},
+      ]},
       { name: 'include_domains', selector: domainSelectorCustom},
       { name: 'include_classes', selector: classSelectorCustom},
       { name: 'include_states', selector: stateSelectorCustom},
       { type: 'grid', name: '!include_bools', flatten: true, schema: [
         { name: 'include_all', type: 'boolean' },
         { name: 'include_hidden', type: 'boolean' },
-    ]},
+      ]},
     ]},
     // { name: 'include', type: 'any' },
-    // { name: 'preferred_icons', type: 'object' },
-    // { name: 'preferred_colors', type: 'object' },
     // { name: 'entities_container_card', type: 'object' },
     // { name: 'entity_card', type: 'object' }
   ];
@@ -187,12 +209,15 @@ const floorsCardConfigStruct = assign(
       double_tap_action: optional(actionConfigStruct),
       fallback_to_next_action: optional(boolean()),
     })),
+    keep_entity_after_toggle_for: optional(number()),
     floor_sort_method: optional(array(union([literal('level'), literal('name'), literal('id')]))),
     floor_sort_order: optional(union([literal('asc'), literal('desc')])),
     area_sort_method: optional(array(union([literal('name'), literal('entities')]))),
     area_sort_order: optional(union([literal('asc'), literal('desc')])),
     class_sort: optional(array(string())),
     domain_sort: optional(array(string())),
+    ignore_floors: optional(array(string())),
+    ignore_areas: optional(array(string())),
     include_domains: optional(array(string())),
     include_classes: optional(array(string())),
     include_states: optional(array(string())),
@@ -201,6 +226,8 @@ const floorsCardConfigStruct = assign(
     include_hidden: optional(boolean()),
     preferred_icons: optional(object()),
     preferred_colors: optional(object()),
+    animate: optional(object()),
+    stack_animations: optional(boolean()),
     entities_container_card: optional(object()),
     entity_card: optional(object()),
   })
@@ -211,23 +238,38 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
 {
   @state() private _config?: LovelaceCardConfig;
   @property({ attribute: false }) public hass!: HomeAssistant;
-  
+  @state() private _enableMultipleAnimations = false;
+
   connectedCallback() {
     super.connectedCallback();
     // void loadHaComponents();
     if (!customElements.get("ha-form")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-button-card") as any)?.getConfigElement();
     }
     if (!customElements.get("ha-entity-picker")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-entities-card") as any)?.getConfigElement();
     }
     if (!customElements.get("ha-card-conditions-editor")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-conditional-card") as any)?.getConfigElement();
     }
   }
 
   public setConfig(config: LovelaceCardConfig): void {
     assert(config, floorsCardConfigStruct);
+
+    if (Object.values(config.animate || {}).some((value) => Array.isArray(value) && value.length === 1)) {
+      config = {
+        ...config,
+        animate: Object.fromEntries(Object.entries(config.animate || {}).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])),
+      }
+    }
+    if (config.animate && Object.values(config.animate).some((value) => Array.isArray(value))) {  
+      this._enableMultipleAnimations = true;
+    }
+
     this._config = config;
   }
 
@@ -249,6 +291,8 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
     }
 
     return html`
+    <!-- add a scroll container -->
+    <div class="card-config">
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
@@ -256,19 +300,140 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
         .computeLabel=${this._computeLabel}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      <ha-expansion-panel
+        header=${"Preferences"} 
+        outlined
+        style="margin-top: 24px;"
+      >
+        <div class="content">
+          <key-value-editor
+          .hass=${this.hass}
+          .elements=${Object.entries(this._config.preferred_icons || {})}
+          .identifier=${'preferred_icons'}
+          .heading=${localize('preferred_icons')}
+          .valueName=${'icon'}
+          .valueSchema=${{ selector: { icon: { placeholder: "mdi:home" } } }}
+          .sortable=${false}
+          @elements-changed=${this._keyValueChanged}
+          ></key-value-editor>
+          <key-value-editor
+          .hass=${this.hass}
+          .elements=${Object.entries(this._config.preferred_colors || {})}
+          .identifier=${'preferred_colors'}
+          .heading=${localize('preferred_colors')}
+          .valueName=${'color'}
+          .valueSchema=${{ selector: { ui_color: { default_color: 'disabled' } } }}
+          @elements-changed=${this._keyValueChanged}
+          ></key-value-editor>
+          <key-value-editor
+          .hass=${this.hass}
+          .elements=${Object.entries(this._config.animate || {})}
+          .identifier=${'animate'}
+          .heading=${localize('animate')}
+          .extraInputs=${html`<div style="display: flex; justify-content: space-evenly;">
+            <ha-form-boolean
+            .hass=${this.hass}
+            .data=${this._config.stack_animations}
+            .label=${localize('stack_animations')}
+            .schema=${{ name: 'stack_animations', type: 'boolean' }}
+            @value-changed=${this._singleValueChanged('stack_animations')}
+            ></ha-form-boolean>
+            <ha-form-boolean
+            .hass=${this.hass}
+            .data=${this._enableMultipleAnimations}
+            .label=${localize('enable_multiple_animations')}
+            .schema=${{ name: 'enable_multiple_animations', type: 'boolean' }}
+            @value-changed=${this._toggleMultipleAnimations(this._config)}
+            ></ha-form-boolean>
+          </div>`}
+          .valueName=${'animation'}
+          .valueSchema=${{ selector: { select: { ...multiCustomSelectorSelect.select, ...animationSchema.select, multiple: this._enableMultipleAnimations } } } }
+          @elements-changed=${this._keyValueChanged}
+          ></key-value-editor>
+        </div>
+      </ha-expansion-panel>
+    </div>
     `;
+  }
+
+  private _toggleMultipleAnimations(config: LovelaceCardConfig) {
+    return (ev: CustomEvent) => {
+      if (config && ev.detail.value === false) {
+        const ev2 = new CustomEvent('value-changed', {
+          detail: {
+            value: {
+              ...this._config,
+                animate: Object.fromEntries(Object.entries(config.animate || {}).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])),
+            }
+          }
+        });
+        this._valueChanged(ev2);
+      }
+      this._enableMultipleAnimations = ev.detail.value;
+    }
+  }
+
+  private _keyValueChanged(ev: CustomEvent): void {
+    const ev2 = new CustomEvent('value-changed', {
+      detail: {
+        value: {
+          ...this._config,
+          [ev.detail.identifier]: Object.fromEntries(ev.detail.elements),
+        }
+      }
+    });
+
+    this._valueChanged(ev2);
+  }
+
+  private _singleValueChanged(key: string) {
+    return (ev: CustomEvent) => {
+      const ev2 = new CustomEvent('value-changed', {
+        detail: {
+          value: {
+            ...this._config,
+            [key]: ev.detail.value,
+          }
+        }
+      });
+      this._valueChanged(ev2);
+    }
   }
 
   private _valueChanged(ev: CustomEvent): void {
     // fireEvent(this, "config-changed", { config: ev.detail.value });
     const detail = { config: ev.detail.value };
     const type = "config-changed";
-    // @ts-ignore
     const event = new Event(type, {
       bubbles:  true,
       composed: true,
     });
-    (event as any).detail = detail;
+    (event as EventWithDetail).detail = detail;
     this.dispatchEvent(event);
+  }
+
+  static get styles() {
+    return css`
+      .card-config {
+        padding: 12px;
+        overflow-y: auto;
+        max-height: 60vh;
+      }
+      .content {
+        padding: 12px;
+      }
+
+      ha-expansion-panel {
+        --ha-card-border-radius: 6px;
+      }
+
+      key-value-editor {
+        display: block;
+      }
+
+      .content>:not(:last-child) {
+        margin-bottom: 24px;
+      }
+    `;
   }
 }

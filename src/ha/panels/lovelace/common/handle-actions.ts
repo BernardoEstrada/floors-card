@@ -16,7 +16,6 @@ export const handleAction = async (
   config: ActionConfigParams,
   action: string
 ): Promise<void> => {
-  console.log('firing event', { config, action });
   fireEvent(node, "hass-action", { config, action });
 };
 

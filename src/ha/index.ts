@@ -4,6 +4,7 @@ export * from "./common/dom/get_main_window";
 export * from "./common/entity/compute_domain";
 export * from "./common/entity/compute_state_domain";
 export * from "./common/entity/supports-feature";
+export * from "./common/entity/get_states";
 export * from "./common/number/clamp";
 export * from "./common/number/format_number";
 export * from "./common/number/round";
@@ -41,3 +42,4 @@ export * from "./components/ha-form/types";
 export * from "./resources/ha-sortable-styles";
 export * from "./types";
 export * from "./util";
+export * from "./const"

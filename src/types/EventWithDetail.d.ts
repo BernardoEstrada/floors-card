@@ -1,0 +1,1 @@
+export type EventWithDetail = (CustomEvent | Event) & { detail: object };

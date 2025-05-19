@@ -1,6 +1,6 @@
 import type { LovelaceCardConfig, ActionConfig } from "ha";
 import { FloorIconTemplate } from "helpers";
-import type { Domain, DomainIncludes } from "./Domain";
+import type { Domain, DomainIncludes, Class, State } from "./Domain";
 
 export interface EntityActions {
   tap_action?: ActionConfig;
@@ -15,7 +15,7 @@ export type FloorSortMethod = 'level' | 'name' | 'id';
 export type AreaSortMethod = 'name' | 'entities';
 export type SortOrder = 'asc' | 'desc';
 
-export interface FloorsCardConfig implements LovelaceCardConfig {
+export interface FloorsCardConfig extends Omit<LovelaceCardConfig, 'index' | 'view_index' | 'view_layout' | 'type'> {
   heading?: string;
   show_floor_icons: ShowIconOptions;
   fallback_floor_icon_template: FloorIconTemplate;
@@ -27,22 +27,27 @@ export interface FloorsCardConfig implements LovelaceCardConfig {
   area_icons_position: IconPositionOptions;
   area_gap: number;
   entity_icon_placement: IconPositionOptions;
-  off_color: string;
+  off_color?: string;
   entity_actions: EntityActions;
+  keep_entity_after_toggle_for?: number;
   floor_sort_method?: FloorSortMethod[];
   floor_sort_order?: SortOrder;
   area_sort_method?: AreaSortMethod[];
   area_sort_order?: SortOrder;
   domain_sort: string[];
   class_sort: string[];
+  ignore_floors?: string[];
+  ignore_areas?: string[];
   include_domains?: Domain[];
-  include_classes?: string[];
-  include_states?: string[];
+  include_classes?: Class[];
+  include_states?: State[];
   include_all: boolean;
   include_hidden: boolean;
   include?: DomainIncludes;
   preferred_icons: Record<string, string>;
   preferred_colors: Record<string, string>;
+  animate: Record<string, string | string[]>;
+  stack_animations?: boolean;
   entities_container_card?: LovelaceCardConfig & { cards_param: string };
   entity_card?: LovelaceCardConfig;
 }
