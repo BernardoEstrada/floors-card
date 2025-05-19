@@ -1,4 +1,4 @@
-import { css, CSSResult } from "lit";
+import { CSSResult } from "lit";
 import { spin } from "./spin";
 import { bounce } from "./bounce";
 import { fade } from "./fade";

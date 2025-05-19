@@ -4,7 +4,7 @@ import { customElement, state } from "lit/decorators.js";
 import { styles } from "./card.styles";
 import { animationKeyframes, animations } from "./animations";
 import { until } from "lit/directives/until.js";
-import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   HomeAssistant,
   LovelaceCardConfig,
@@ -15,8 +15,6 @@ import {
   actionHandler,
   handleAction,
   ActionHandlerEvent,
-  HaFormTimeData,
-  EntityRegistryDisplayEntry,
   computeDomain
 } from "ha";
 import {
@@ -432,6 +430,7 @@ export default class FloorsCard extends LitElement {
   private async _createCard(
     cardConfig: LovelaceCardConfig
   ): Promise<TemplateResult> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const helpers = await (window as any).loadCardHelpers();
     const card = helpers.createCardElement(cardConfig);
     card.hass = this._hass;

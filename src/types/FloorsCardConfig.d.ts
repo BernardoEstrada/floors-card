@@ -1,4 +1,4 @@
-import type { LovelaceCardConfig, ActionConfig, HaFormTimeData } from "ha";
+import type { LovelaceCardConfig, ActionConfig } from "ha";
 import { FloorIconTemplate } from "helpers";
 import type { Domain, DomainIncludes, Class, State } from "./Domain";
 
@@ -15,7 +15,7 @@ export type FloorSortMethod = 'level' | 'name' | 'id';
 export type AreaSortMethod = 'name' | 'entities';
 export type SortOrder = 'asc' | 'desc';
 
-export interface FloorsCardConfig implements LovelaceCardConfig {
+export interface FloorsCardConfig extends Omit<LovelaceCardConfig, 'index' | 'view_index' | 'view_layout' | 'type'> {
   heading?: string;
   show_floor_icons: ShowIconOptions;
   fallback_floor_icon_template: FloorIconTemplate;

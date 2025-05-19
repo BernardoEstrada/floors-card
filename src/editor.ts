@@ -12,13 +12,14 @@ import {
   SelectSelector,
 } from "ha";
 import setupCustomlocalize from "localize";
-import { FloorsCardConfig } from "types";
+import { EventWithDetail, FloorsCardConfig } from "types";
 import "./keyValueEditor.ts"
 import { availableBaseAnimations } from "animations";
 
 const LOCALIZE_PATH = ['editor'];
 
 interface HaFormSelectSchemaAny extends HaFormSelectSchema {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: readonly (readonly [any, string])[];
 }
 const localize = setupCustomlocalize(undefined, LOCALIZE_PATH);
@@ -243,12 +244,15 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
     super.connectedCallback();
     // void loadHaComponents();
     if (!customElements.get("ha-form")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-button-card") as any)?.getConfigElement();
     }
     if (!customElements.get("ha-entity-picker")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-entities-card") as any)?.getConfigElement();
     }
     if (!customElements.get("ha-card-conditions-editor")) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (customElements.get("hui-conditional-card") as any)?.getConfigElement();
     }
   }
@@ -359,7 +363,7 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
           detail: {
             value: {
               ...this._config,
-              animate: Object.fromEntries(Object.entries(config.animate || {}).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])),
+                animate: Object.fromEntries(Object.entries(config.animate || {}).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])),
             }
           }
         });
@@ -404,7 +408,7 @@ export class FloorsCardEditor extends LitElement implements LovelaceCardEditor
       bubbles:  true,
       composed: true,
     });
-    (event as any).detail = detail;
+    (event as EventWithDetail).detail = detail;
     this.dispatchEvent(event);
   }
 

@@ -31,6 +31,7 @@ export class KeyValueEditor extends LitElement {
   private _sortable?;
 
   private _removeElement(ev: Event) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const index = (ev.currentTarget as any).index;
     const newElements = this.elements!.concat();
     newElements.splice(index, 1);
@@ -85,10 +86,8 @@ export class KeyValueEditor extends LitElement {
 
         ${[this.extraInputs || nothing]}
 
-        ${guard([this.elements, false], () =>
-          false
-          ? ""
-          : this.elements!.map(([key, val], index) => html`
+        ${guard([this.elements], () =>
+          this.elements!.map(([key, val], index) => html`
             <div class="element">
               ${this.sortable ? html`<div class="handle"><ha-icon icon="mdi:drag"></ha-icon></div>` : ""}
               <!-- make both inputs be on the same line -->
